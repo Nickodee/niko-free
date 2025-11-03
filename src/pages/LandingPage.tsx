@@ -12,10 +12,50 @@ interface LandingPageProps {
 export default function LandingPage({ onNavigate, onEventClick }: LandingPageProps) {
   const [currentBanner, setCurrentBanner] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('Nairobi, Kenya');
+  const [selectedLocation, setSelectedLocation] = useState('Detecting location...');
+  const [locationPlaceholder, setLocationPlaceholder] = useState('Detecting location...');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const categoriesRef = React.useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [locationSuggestions, setLocationSuggestions] = useState<Array<{display_name: string, lat: string, lon: string}>>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const locationInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    // Get user's location on component mount
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          
+          // Use reverse geocoding to get location name
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const city = data.address.city || data.address.town || data.address.county || data.address.state;
+            const country = data.address.country;
+            const locationString = `${city}, ${country}`;
+            setSelectedLocation(locationString);
+            setLocationPlaceholder(locationString);
+          } catch (error) {
+            console.error('Error getting location name:', error);
+            setSelectedLocation('Nairobi, Kenya');
+            setLocationPlaceholder('Nairobi, Kenya');
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setSelectedLocation('Nairobi, Kenya');
+          setLocationPlaceholder('Nairobi, Kenya');
+        }
+      );
+    } else {
+      setSelectedLocation('Nairobi, Kenya');
+      setLocationPlaceholder('Nairobi, Kenya');
+    }
+  }, []);
 
   const featuredEvents = [
     {
@@ -199,6 +239,41 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
     }
   }, []);
 
+  const fetchLocationSuggestions = async (query: string) => {
+    if (query.length < 3) {
+      setLocationSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ke`
+      );
+      const data = await response.json();
+      setLocationSuggestions(data);
+    } catch (error) {
+      console.error('Error fetching location suggestions:', error);
+    }
+  };
+
+  const handleLocationChange = (value: string) => {
+    setSelectedLocation(value);
+    setShowLocationSuggestions(true);
+    
+    // Debounce the API call
+    const timeoutId = setTimeout(() => {
+      fetchLocationSuggestions(value);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  };
+
+  const selectLocationSuggestion = (suggestion: {display_name: string}) => {
+    setSelectedLocation(suggestion.display_name);
+    setShowLocationSuggestions(false);
+    setLocationSuggestions([]);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="sticky top-0 z-50">
@@ -206,9 +281,9 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
       </div>
       <div className="">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="flex-1 flex items-center space-x-3 bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-              <Search className="w-5 h-5 text-gray-400" />
+          <div className="flex flex-col md:flex-row gap-3 items-center bg-gray-100 rounded-2xl p-4">
+            <div className="w-full md:flex-1 flex items-center space-x-3 bg-white rounded-xl px-4 py-3 min-w-0">
+              <Search className="w-5 h-5 text-gray-400 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Search events, categories, or interests..."
@@ -217,22 +292,51 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
                 className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500"
               />
             </div>
-            <div className="w-full md:w-64 flex items-center space-x-3 bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-              <MapPin className="w-5 h-5 text-gray-400" />
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-gray-900 cursor-pointer"
-              >
-                <option>Nairobi, Kenya</option>
-                <option>Mombasa, Kenya</option>
-                <option>Nakuru, Kenya</option>
-                <option>Eldoret, Kenya</option>
-                <option>Meru, Kenya</option>
-              </select>
+            <div className="w-full md:w-80 relative">
+              <div className="flex items-center space-x-3 bg-white rounded-xl px-4 py-3">
+                <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                <input
+                  ref={locationInputRef}
+                  type="text"
+                  placeholder={locationPlaceholder}
+                  value={selectedLocation}
+                  onChange={(e) => handleLocationChange(e.target.value)}
+                  onFocus={() => {
+                    if (selectedLocation === locationPlaceholder) {
+                      setSelectedLocation('');
+                      setShowLocationSuggestions(true);
+                    }
+                  }}
+                  onBlur={() => {
+                    // Delay to allow clicking on suggestions
+                    setTimeout(() => {
+                      if (selectedLocation === '') {
+                        setSelectedLocation(locationPlaceholder);
+                      }
+                      setShowLocationSuggestions(false);
+                    }, 200);
+                  }}
+                  className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500"
+                />
+              </div>
+              
+              {showLocationSuggestions && locationSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 z-50 max-h-64 overflow-y-auto">
+                  {locationSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => selectLocationSuggestion(suggestion)}
+                      className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 flex items-start space-x-3"
+                    >
+                      <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
+                      <span className="text-sm text-gray-900">{suggestion.display_name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <button className="w-full md:w-auto bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all">
-              Search
+            <button className="w-full md:w-12 md:h-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transform hover:scale-105 transition-all flex-shrink-0">
+              <Search className="w-5 h-5" />
             </button>
           </div>
         </div>
