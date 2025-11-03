@@ -46,6 +46,17 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
       attendees: 45,
       category: 'Fitness',
       price: 'Free'
+    },
+    {
+      id: '4',
+      title: 'Morning Yoga in the Park',
+      image: 'https://images.pexels.com/photos/3822647/pexels-photo-3822647.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Sun, Nov 3',
+      time: '6:00 AM',
+      location: 'Karura Forest',
+      attendees: 45,
+      category: 'Fitness',
+      price: 'Free'
     }
     // Add more weekend events as needed
   ];
@@ -99,7 +110,7 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {weekendEvents.map((event) => (
             <EventCard
               key={event.id}

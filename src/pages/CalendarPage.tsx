@@ -67,15 +67,82 @@ export default function CalendarPage({ onNavigate, onEventClick }: CalendarPageP
       id: '1',
       title: 'Tech Conference',
       image: 'https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?auto=compress&cs=tinysrgb&w=800',
-      date: 'Nov 15',
+      date: 'Nov 15, 2025',
       time: '9:00 AM',
       location: 'KICC, Nairobi',
       attendees: 500,
       category: 'Technology',
       price: 'KES 2,000'
     },
-    // Add more events as needed
+    {
+      id: '2',
+      title: 'Music Festival',
+      image: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=800',
+      date: 'Nov 15, 2025',
+      time: '6:00 PM',
+      location: 'Uhuru Park, Nairobi',
+      attendees: 1000,
+      category: 'Music',
+      price: 'KES 1,500'
+    },
+    {
+      id: '3',
+      title: 'Fitness Bootcamp',
+      image: 'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=800',
+      date: 'Nov 18, 2025',
+      time: '7:00 AM',
+      location: 'Karura Forest, Nairobi',
+      attendees: 50,
+      category: 'Sports & Fitness',
+      price: 'KES 500'
+    },
+    {
+      id: '4',
+      title: 'Art Exhibition',
+      image: 'https://images.pexels.com/photos/1839919/pexels-photo-1839919.jpeg?auto=compress&cs=tinysrgb&w=800',
+      date: 'Nov 20, 2025',
+      time: '10:00 AM',
+      location: 'National Museum, Nairobi',
+      attendees: 200,
+      category: 'Arts & Culture',
+      price: 'KES 300'
+    },
+    {
+      id: '5',
+      title: 'Startup Pitch Night',
+      image: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800',
+      date: 'Nov 22, 2025',
+      time: '5:00 PM',
+      location: 'iHub, Nairobi',
+      attendees: 150,
+      category: 'Business',
+      price: 'Free'
+    },
+    {
+      id: '6',
+      title: 'Food Festival',
+      image: 'https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=800',
+      date: 'Nov 25, 2025',
+      time: '12:00 PM',
+      location: 'Two Rivers Mall, Nairobi',
+      attendees: 800,
+      category: 'Food & Drink',
+      price: 'KES 1,000'
+    },
   ];
+
+  const getEventsForDate = (date: Date) => {
+    return events.filter(event => {
+      const eventDate = new Date(event.date);
+      return eventDate.toDateString() === date.toDateString();
+    });
+  };
+
+  const hasEvents = (date: Date) => {
+    return getEventsForDate(date).length > 0;
+  };
+
+  const selectedDateEvents = getEventsForDate(selectedDate);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -143,14 +210,40 @@ export default function CalendarPage({ onNavigate, onEventClick }: CalendarPageP
                 key={index}
                 onClick={() => date && setSelectedDate(date)}
                 className={`
-                  aspect-square p-2 rounded-lg transition-all
+                  aspect-square p-1 rounded-lg transition-all relative flex flex-col items-start
                   ${!date ? 'invisible' : ''}
                   ${date && isToday(date) ? 'bg-blue-100 text-blue-600' : ''}
                   ${date && isSelectedDate(date) ? 'bg-blue-600 text-white' : ''}
                   ${date && !isToday(date) && !isSelectedDate(date) ? 'hover:bg-gray-100' : ''}
                 `}
               >
-                {date?.getDate()}
+                <span className="text-sm font-medium mb-0.5">{date?.getDate()}</span>
+                {date && hasEvents(date) && (
+                  <div className="w-full space-y-0.5 overflow-hidden">
+                    {getEventsForDate(date).slice(0, 2).map((event, i) => (
+                      <div
+                        key={i}
+                        className={`text-[8px] leading-tight truncate w-full px-0.5 py-0.5 rounded ${
+                          isSelectedDate(date) 
+                            ? 'bg-white/20 text-white' 
+                            : 'bg-blue-100 text-blue-700'
+                        }`}
+                        title={event.title}
+                      >
+                        {event.title}
+                      </div>
+                    ))}
+                    {getEventsForDate(date).length > 2 && (
+                      <div
+                        className={`text-[8px] text-center ${
+                          isSelectedDate(date) ? 'text-white/70' : 'text-gray-500'
+                        }`}
+                      >
+                        +{getEventsForDate(date).length - 2}
+                      </div>
+                    )}
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -159,18 +252,23 @@ export default function CalendarPage({ onNavigate, onEventClick }: CalendarPageP
         <div>
           <h3 className="text-2xl font-bold text-gray-900 mb-6">
             Events on {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            {selectedDateEvents.length > 0 && (
+              <span className="ml-2 text-blue-600">({selectedDateEvents.length})</span>
+            )}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {selectedDateEvents.map((event) => (
               <EventCard
                 key={event.id}
                 {...event}
                 onClick={onEventClick}
               />
             ))}
-            {events.length === 0 && (
+            {selectedDateEvents.length === 0 && (
               <div className="col-span-full text-center py-12">
+                <CalendarIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-600 text-lg">No events found on this date</p>
+                <p className="text-gray-500 text-sm mt-2">Try selecting another date</p>
               </div>
             )}
           </div>
