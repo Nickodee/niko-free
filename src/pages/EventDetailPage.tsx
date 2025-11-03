@@ -2,6 +2,8 @@ import { Calendar, MapPin, Users, Share2, Heart, Download, Clock, Tag, ExternalL
 import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import LoginModal from '../components/LoginModal';
+import SignupModal from '../components/SignupModal';
 
 interface EventDetailPageProps {
   eventId: string;
@@ -11,6 +13,9 @@ interface EventDetailPageProps {
 export default function EventDetailPage({ onNavigate }: EventDetailPageProps) {
   const [isRSVPed, setIsRSVPed] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   const event = {
     title: 'Nairobi Tech Summit 2025',
@@ -177,6 +182,65 @@ Don't miss this opportunity to be part of Africa's tech revolution!`,
                       <p className="text-gray-600">{event.host.role}</p>
                     </div>
                   </div>
+                </div>
+
+                {/* Attendees Section */}
+                <div className="border-t border-gray-200 pt-8 mt-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-gray-900">Attendees ({event.attendees})</h3>
+                    {!isLoggedIn && (
+                      <button
+                        onClick={() => setShowLoginModal(true)}
+                        className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                      >
+                        See
+                      </button>
+                    )}
+                  </div>
+                  
+                  {!isLoggedIn ? (
+                    <div className="flex items-center space-x-4">
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <div key={index} className="flex items-center space-x-3 blur-sm">
+                          <img
+                            src={`https://i.pravatar.cc/150?img=${(index + 1) * 5}`}
+                            alt="Attendee"
+                            className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 text-sm truncate">
+                              {['John Doe', 'Jane Smith', 'Alex Johnson'][index]}
+                            </p>
+                            <p className="text-xs text-gray-600">Attending</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {Array.from({ length: 12 }).map((_, index) => (
+                          <div key={index} className="flex items-center space-x-3">
+                            <img
+                              src={`https://i.pravatar.cc/150?img=${(index + 1) * 5}`}
+                              alt="Attendee"
+                              className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-gray-900 text-sm truncate">
+                                {['John Doe', 'Jane Smith', 'Alex Johnson', 'Sarah Williams', 'Michael Brown', 'Emily Davis', 'David Wilson', 'Lisa Anderson', 'James Taylor', 'Maria Garcia', 'Robert Lee', 'Jessica White'][index]}
+                              </p>
+                              <p className="text-xs text-gray-600">Attending</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <button className="w-full py-3 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all">
+                        View All {event.attendees} Attendees
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t border-gray-200 pt-8 mt-8">
@@ -358,6 +422,34 @@ Don't miss this opportunity to be part of Africa's tech revolution!`,
       </div>
 
       <Footer />
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onNavigate={onNavigate}
+          onSwitchToSignup={() => {
+            setShowLoginModal(false);
+            setShowSignupModal(true);
+          }}
+        />
+      )}
+
+      {/* Signup Modal */}
+      {showSignupModal && (
+        <SignupModal
+          onClose={() => setShowSignupModal(false)}
+          onSignup={() => {
+            setIsLoggedIn(true);
+            setShowSignupModal(false);
+          }}
+          onSwitchToLogin={() => {
+            setShowSignupModal(false);
+            setShowLoginModal(true);
+          }}
+        />
+      )}
     </div>
   );
 }

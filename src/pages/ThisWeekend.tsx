@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, Calendar, Filter } from 'lucide-react';
+import { MapPin, Calendar, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import EventCard from '../components/EventCard';
@@ -13,6 +13,8 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
   const [selectedLocation, setSelectedLocation] = useState('Nairobi, Kenya');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedDay, setSelectedDay] = useState('All');
+  const [showNextWeekLeftArrow, setShowNextWeekLeftArrow] = useState(false);
+  const nextWeekRef = React.useRef<HTMLDivElement>(null);
 
   const allEvents = [
     {
@@ -115,6 +117,106 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
 
   const days = ['All', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+  // Next week events
+  const nextWeekEvents = [
+    {
+      id: '9',
+      title: 'Business Networking Breakfast',
+      image: 'https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Mon, Nov 4',
+      day: 'Monday',
+      time: '7:30 AM',
+      location: 'Radisson Blu Hotel',
+      attendees: 85,
+      category: 'Business',
+      price: 'KES 800'
+    },
+    {
+      id: '10',
+      title: 'Salsa Dance Classes',
+      image: 'https://images.pexels.com/photos/3822647/pexels-photo-3822647.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Tue, Nov 5',
+      day: 'Tuesday',
+      time: '7:00 PM',
+      location: 'Dance Studio Nairobi',
+      attendees: 42,
+      category: 'Dance',
+      price: 'KES 1500'
+    },
+    {
+      id: '11',
+      title: 'Photography Workshop',
+      image: 'https://images.pexels.com/photos/1983037/pexels-photo-1983037.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Wed, Nov 6',
+      day: 'Wednesday',
+      time: '2:00 PM',
+      location: 'Nairobi Gallery',
+      attendees: 65,
+      category: 'Photography',
+      price: 'KES 2000'
+    },
+    {
+      id: '12',
+      title: 'Stand-Up Comedy Night',
+      image: 'https://images.pexels.com/photos/713149/pexels-photo-713149.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Thu, Nov 7',
+      day: 'Thursday',
+      time: '8:00 PM',
+      location: 'Laugh Inn',
+      attendees: 178,
+      category: 'Entertainment',
+      price: 'KES 600'
+    },
+    {
+      id: '13',
+      title: 'Digital Marketing Seminar',
+      image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Fri, Nov 8',
+      day: 'Friday',
+      time: '9:00 AM',
+      location: 'Nairobi Garage',
+      attendees: 210,
+      category: 'Business',
+      price: 'KES 3500'
+    },
+    {
+      id: '14',
+      title: 'Live Jazz & Dinner',
+      image: 'https://images.pexels.com/photos/1481308/pexels-photo-1481308.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Fri, Nov 8',
+      day: 'Friday',
+      time: '7:30 PM',
+      location: 'The Alchemist',
+      attendees: 134,
+      category: 'Music',
+      price: 'KES 2500'
+    },
+    {
+      id: '15',
+      title: 'Cycling Tour - Karura Forest',
+      image: 'https://images.pexels.com/photos/100582/pexels-photo-100582.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Sat, Nov 9',
+      day: 'Saturday',
+      time: '6:00 AM',
+      location: 'Karura Forest',
+      attendees: 98,
+      category: 'Sports',
+      price: 'KES 500'
+    },
+    {
+      id: '16',
+      title: 'Wine Tasting Experience',
+      image: 'https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Sat, Nov 9',
+      day: 'Saturday',
+      time: '4:00 PM',
+      location: 'Westlands Wine Bar',
+      attendees: 56,
+      category: 'Food',
+      price: 'KES 3000'
+    }
+  ];
+
   // Filter events based on selected day and category
   const weekendEvents = allEvents.filter(event => {
     const matchesDay = selectedDay === 'All' || event.day === selectedDay;
@@ -123,6 +225,29 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
   });
 
   const categories = ['All', 'Music', 'Culture', 'Sports', 'Food', 'Technology', 'Fitness'];
+
+  const handleNextWeekScroll = () => {
+    if (nextWeekRef.current) {
+      setShowNextWeekLeftArrow(nextWeekRef.current.scrollLeft > 0);
+    }
+  };
+
+  const scrollNextWeek = (direction: 'left' | 'right') => {
+    if (!nextWeekRef.current) return;
+    const scrollAmount = 600;
+    nextWeekRef.current.scrollBy({
+      left: direction === 'right' ? scrollAmount : -scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  React.useEffect(() => {
+    const element = nextWeekRef.current;
+    if (element) {
+      element.addEventListener('scroll', handleNextWeekScroll);
+      return () => element.removeEventListener('scroll', handleNextWeekScroll);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -175,6 +300,56 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
             <p className="text-gray-600 text-lg">No events found for this weekend</p>
           </div>
         )}
+      </div>
+
+      {/* Next Week Section */}
+      <div className="bg-gradient-to-b from-blue-50 to-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full mb-6">
+              <Calendar className="w-4 h-4 text-blue-600" />
+              <span className="text-blue-600 text-sm font-medium">Coming Soon</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Next Week
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Plan ahead with upcoming events for next week
+            </p>
+          </div>
+
+          <div className="relative">
+            <div ref={nextWeekRef} className="overflow-x-auto hide-scrollbar">
+              <div className="flex gap-6 pb-4">
+                {nextWeekEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="flex-shrink-0 w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[280px]"
+                  >
+                    <EventCard
+                      {...event}
+                      onClick={onEventClick}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Scroll Arrows for Next Week */}
+            <button
+              onClick={() => scrollNextWeek('left')}
+              className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white rounded-full items-center justify-center shadow-xl hover:bg-gray-50 transition-all z-10 ${showNextWeekLeftArrow ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-900" />
+            </button>
+            <button
+              onClick={() => scrollNextWeek('right')}
+              className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white rounded-full items-center justify-center shadow-xl hover:bg-gray-50 transition-all z-10"
+            >
+              <ChevronRight className="w-6 h-6 text-gray-900" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <Footer />
