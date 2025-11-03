@@ -118,7 +118,26 @@ Don't miss this opportunity to be part of Africa's tech revolution!`,
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Attendees</p>
-                      <p className="font-semibold text-gray-900">{event.attendees} attending</p>
+                      <div className="flex items-center space-x-2">
+                        <div className="flex -space-x-2">
+                          <img
+                            src="https://i.pravatar.cc/150?img=15"
+                            alt="Attendee"
+                            className="w-8 h-8 rounded-full border-2 border-white"
+                          />
+                          <img
+                            src="https://i.pravatar.cc/150?img=22"
+                            alt="Attendee"
+                            className="w-8 h-8 rounded-full border-2 border-white"
+                          />
+                          <img
+                            src="https://i.pravatar.cc/150?img=35"
+                            alt="Attendee"
+                            className="w-8 h-8 rounded-full border-2 border-white"
+                          />
+                        </div>
+                        <p className="font-semibold text-gray-900">+{event.attendees - 3} attending</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -161,13 +180,92 @@ Don't miss this opportunity to be part of Africa's tech revolution!`,
                 </div>
 
                 <div className="border-t border-gray-200 pt-8 mt-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Location</h3>
-                  <div className="bg-gray-100 rounded-xl h-64 flex items-center justify-center">
-                    <div className="text-center">
-                      <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                      <p className="text-gray-600">Map view</p>
-                      <p className="text-sm text-gray-500">{event.location}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Reviews</h3>
+                  <div className="space-y-6">
+                    <div className="flex items-start space-x-4">
+                      <img
+                        src="https://i.pravatar.cc/150?img=12"
+                        alt="Reviewer"
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">Sarah Johnson</h4>
+                            <p className="text-sm text-gray-600">2 weeks ago</p>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <svg key={star} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                              </svg>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">
+                          Amazing event! The speakers were incredibly insightful and the networking opportunities were fantastic. Learned so much about AI and blockchain applications in Africa.
+                        </p>
+                      </div>
                     </div>
+
+                    <div className="flex items-start space-x-4">
+                      <img
+                        src="https://i.pravatar.cc/150?img=33"
+                        alt="Reviewer"
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">Michael Omondi</h4>
+                            <p className="text-sm text-gray-600">1 month ago</p>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            {[1, 2, 3, 4].map((star) => (
+                              <svg key={star} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                              </svg>
+                            ))}
+                            <svg className="w-5 h-5 text-gray-300 fill-current" viewBox="0 0 20 20">
+                              <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                            </svg>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">
+                          Great summit with lots of valuable content. The venue was perfect and well-organized. Would have loved more hands-on workshop time though.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-4">
+                      <img
+                        src="https://i.pravatar.cc/150?img=27"
+                        alt="Reviewer"
+                        className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">Amina Hassan</h4>
+                            <p className="text-sm text-gray-600">3 weeks ago</p>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <svg key={star} className="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                              </svg>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">
+                          Exceeded my expectations! Made valuable connections with investors and fellow entrepreneurs. The pitch competition was particularly inspiring. Definitely attending next year!
+                        </p>
+                      </div>
+                    </div>
+
+                    <button className="w-full py-3 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-all">
+                      Load More Reviews
+                    </button>
                   </div>
                 </div>
               </div>

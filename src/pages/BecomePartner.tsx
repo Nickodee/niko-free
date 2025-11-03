@@ -1,5 +1,5 @@
-import { Upload, CheckCircle, Building2, Mail, Phone, Tag, FileText, ArrowRight, ArrowLeft, MapPin, PenTool } from 'lucide-react';
-import { useState } from 'react';
+import { Upload, CheckCircle, Building2, Mail, Phone, Tag, FileText, ArrowRight, ArrowLeft, MapPin, PenTool, Plus, Minus } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -21,20 +21,23 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
     acceptTerms: false
   });
   const [submitted, setSubmitted] = useState(false);
+  const [locationSuggestions, setLocationSuggestions] = useState<any[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const locationTimeoutRef = useRef<NodeJS.Timeout>();
 
   const categories = [
-    { id: 'travel', name: 'Travel', icon: '✈️' },
-    { id: 'sports', name: 'Sports & Fitness', icon: '🏋️' },
-    { id: 'social', name: 'Social Activities', icon: '👥' },
-    { id: 'music', name: 'Music & Culture', icon: '🎵' },
-    { id: 'health', name: 'Health & Wellbeing', icon: '❤️' },
-    { id: 'pets', name: 'Pets & Animals', icon: '🐕' },
-    { id: 'autofest', name: 'Autofest', icon: '🚗' },
-    { id: 'hobbies', name: 'Hobbies & Interests', icon: '✨' },
-    { id: 'gaming', name: 'Gaming', icon: '🎮' },
-    { id: 'shopping', name: 'Shopping', icon: '🛍️' },
-    { id: 'religious', name: 'Religious', icon: '⛪' },
-    { id: 'dance', name: 'Dance', icon: '🎯' },
+    { id: 'travel', name: 'Travel' },
+    { id: 'sports', name: 'Sports & Fitness' },
+    { id: 'social', name: 'Social Activities' },
+    { id: 'music', name: 'Music & Culture' },
+    { id: 'health', name: 'Health & Wellbeing' },
+    { id: 'pets', name: 'Pets & Animals' },
+    { id: 'autofest', name: 'Autofest' },
+    { id: 'hobbies', name: 'Hobbies & Interests' },
+    { id: 'gaming', name: 'Gaming' },
+    { id: 'shopping', name: 'Shopping' },
+    { id: 'religious', name: 'Religious' },
+    { id: 'dance', name: 'Dance' },
   ];
 
   const handleCategoryToggle = (categoryId: string) => {
@@ -56,6 +59,76 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
 
   const handleSubmit = () => {
     setSubmitted(true);
+  };
+
+  // Auto-detect user's location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const city = data.address.city || data.address.town || data.address.village || data.address.county;
+            if (city) {
+              setFormData(prev => ({ ...prev, location: city }));
+            }
+          } catch (error) {
+            console.error('Error fetching location:', error);
+            setFormData(prev => ({ ...prev, location: 'Nairobi' }));
+          }
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          setFormData(prev => ({ ...prev, location: 'Nairobi' }));
+        }
+      );
+    } else {
+      setFormData(prev => ({ ...prev, location: 'Nairobi' }));
+    }
+  }, []);
+
+  // Fetch location suggestions
+  const fetchLocationSuggestions = async (query: string) => {
+    if (query.length < 3) {
+      setLocationSuggestions([]);
+      setShowLocationSuggestions(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=ke`
+      );
+      const data = await response.json();
+      setLocationSuggestions(data);
+      setShowLocationSuggestions(true);
+    } catch (error) {
+      console.error('Error fetching location suggestions:', error);
+    }
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData({ ...formData, location: value });
+
+    if (locationTimeoutRef.current) {
+      clearTimeout(locationTimeoutRef.current);
+    }
+
+    locationTimeoutRef.current = setTimeout(() => {
+      fetchLocationSuggestions(value);
+    }, 300);
+  };
+
+  const handleLocationSelect = (location: any) => {
+    const locationName = location.display_name.split(',')[0];
+    setFormData({ ...formData, location: locationName });
+    setShowLocationSuggestions(false);
+    setLocationSuggestions([]);
   };
 
   const canProceedStep1 = formData.businessName && formData.location;
@@ -99,12 +172,12 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
     <div className="min-h-screen bg-gray-50">
       <Navbar onNavigate={onNavigate} />
 
-      <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 py-16">
+      <div className="py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 text-center">
             Become a Partner
           </h1>
-          <p className="text-lg text-blue-100 text-center mb-8">
+          <p className="text-lg text-gray-600 text-center mb-8">
             Join thousands of event organizers using Niko Free
           </p>
           
@@ -116,13 +189,13 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
                       currentStep >= step
-                        ? 'bg-white text-blue-600'
-                        : 'bg-blue-500 text-white'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-300 text-gray-600'
                     }`}
                   >
                     {step}
                   </div>
-                  <span className="text-xs text-blue-100 mt-2 hidden sm:block">
+                  <span className="text-xs text-gray-600 mt-2 hidden sm:block">
                     {step === 1 && 'Basic Info'}
                     {step === 2 && 'Categories'}
                     {step === 3 && 'Contact'}
@@ -132,7 +205,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                 {step < 4 && (
                   <div
                     className={`h-1 flex-1 mx-2 transition-all ${
-                      currentStep > step ? 'bg-white' : 'bg-blue-500'
+                      currentStep > step ? 'bg-blue-600' : 'bg-gray-300'
                     }`}
                   />
                 )}
@@ -142,8 +215,8 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-20">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-20">
+        <div className="p-8 md:p-12">
           
           {/* Step 1: Basic Information */}
           {currentStep === 1 && (
@@ -186,27 +259,35 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                 </div>
               </div>
 
-              <div>
+              <div className="relative">
                 <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
                   <MapPin className="w-4 h-4" />
                   <span>Location *</span>
                 </label>
-                <select
+                <input
+                  type="text"
                   required
                   value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors cursor-pointer"
-                >
-                  <option value="">Select your location</option>
-                  <option value="Nairobi">Nairobi</option>
-                  <option value="Mombasa">Mombasa</option>
-                  <option value="Kisumu">Kisumu</option>
-                  <option value="Nakuru">Nakuru</option>
-                  <option value="Eldoret">Eldoret</option>
-                  <option value="Thika">Thika</option>
-                  <option value="Malindi">Malindi</option>
-                  <option value="Meru">Meru</option>
-                </select>
+                  onChange={handleLocationChange}
+                  onFocus={() => formData.location.length >= 3 && setShowLocationSuggestions(true)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                  placeholder="Search for your location..."
+                />
+                {showLocationSuggestions && locationSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                    {locationSuggestions.map((location, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleLocationSelect(location)}
+                        className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors flex items-start space-x-2 border-b border-gray-100 last:border-b-0"
+                      >
+                        <MapPin className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                        <span className="text-sm text-gray-900">{location.display_name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end pt-4">
@@ -239,22 +320,29 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   <Tag className="w-4 h-4" />
                   <span>Select Categories * (Choose at least one)</span>
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {categories.map((category) => (
-                    <button
-                      key={category.id}
-                      type="button"
-                      onClick={() => handleCategoryToggle(category.id)}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        formData.categories.includes(category.id)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-blue-300'
-                      }`}
-                    >
-                      <div className="text-2xl mb-2">{category.icon}</div>
-                      <div className="text-sm font-semibold text-gray-900">{category.name}</div>
-                    </button>
-                  ))}
+                <div className="flex flex-wrap gap-3">
+                  {categories.map((category) => {
+                    const isSelected = formData.categories.includes(category.id);
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => handleCategoryToggle(category.id)}
+                        className={`px-4 py-2 rounded-full border-2 transition-all flex items-center space-x-2 ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-600 text-white'
+                            : 'border-gray-200 bg-white text-gray-900 hover:border-blue-300'
+                        }`}
+                      >
+                        <span className="text-sm font-medium">{category.name}</span>
+                        {isSelected ? (
+                          <Minus className="w-4 h-4 flex-shrink-0" />
+                        ) : (
+                          <Plus className="w-4 h-4 flex-shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

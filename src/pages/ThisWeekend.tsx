@@ -12,13 +12,15 @@ interface ThisWeekendProps {
 export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendProps) {
   const [selectedLocation, setSelectedLocation] = useState('Nairobi, Kenya');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedDay, setSelectedDay] = useState('All');
 
-  const weekendEvents = [
+  const allEvents = [
     {
       id: '1',
       title: 'Weekend Art Exhibition',
       image: 'https://images.pexels.com/photos/1839919/pexels-photo-1839919.jpeg?auto=compress&cs=tinysrgb&w=600',
       date: 'Sat, Nov 2',
+      day: 'Saturday',
       time: '10:00 AM',
       location: 'National Museum',
       attendees: 230,
@@ -30,6 +32,7 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
       title: 'Jazz Night Live',
       image: 'https://images.pexels.com/photos/1481308/pexels-photo-1481308.jpeg?auto=compress&cs=tinysrgb&w=600',
       date: 'Sat, Nov 2',
+      day: 'Saturday',
       time: '8:00 PM',
       location: 'Alliance Française',
       attendees: 189,
@@ -41,6 +44,7 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
       title: 'Morning Yoga in the Park',
       image: 'https://images.pexels.com/photos/3822647/pexels-photo-3822647.jpeg?auto=compress&cs=tinysrgb&w=600',
       date: 'Sun, Nov 3',
+      day: 'Sunday',
       time: '6:00 AM',
       location: 'Karura Forest',
       attendees: 45,
@@ -49,17 +53,74 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
     },
     {
       id: '4',
-      title: 'Morning Yoga in the Park',
-      image: 'https://images.pexels.com/photos/3822647/pexels-photo-3822647.jpeg?auto=compress&cs=tinysrgb&w=600',
-      date: 'Sun, Nov 3',
-      time: '6:00 AM',
-      location: 'Karura Forest',
-      attendees: 45,
-      category: 'Fitness',
+      title: 'Tech Thursday Meetup',
+      image: 'https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Thu, Oct 31',
+      day: 'Thursday',
+      time: '6:00 PM',
+      location: 'iHub Nairobi',
+      attendees: 120,
+      category: 'Technology',
       price: 'Free'
+    },
+    {
+      id: '5',
+      title: 'Friday Night Comedy',
+      image: 'https://images.pexels.com/photos/713149/pexels-photo-713149.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Fri, Nov 1',
+      day: 'Friday',
+      time: '8:30 PM',
+      location: 'Comedy Club Kenya',
+      attendees: 156,
+      category: 'Entertainment',
+      price: 'KES 500'
+    },
+    {
+      id: '6',
+      title: 'Thursday Food Market',
+      image: 'https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Thu, Oct 31',
+      day: 'Thursday',
+      time: '12:00 PM',
+      location: 'Village Market',
+      attendees: 340,
+      category: 'Food',
+      price: 'Free'
+    },
+    {
+      id: '7',
+      title: 'Friday Beach Cleanup',
+      image: 'https://images.pexels.com/photos/2422915/pexels-photo-2422915.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Fri, Nov 1',
+      day: 'Friday',
+      time: '8:00 AM',
+      location: 'Diani Beach',
+      attendees: 78,
+      category: 'Community',
+      price: 'Free'
+    },
+    {
+      id: '8',
+      title: 'Sunday Brunch & Music',
+      image: 'https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&w=600',
+      date: 'Sun, Nov 3',
+      day: 'Sunday',
+      time: '11:00 AM',
+      location: 'Java House Karen',
+      attendees: 95,
+      category: 'Food',
+      price: 'KES 1200'
     }
-    // Add more weekend events as needed
   ];
+
+  const days = ['All', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  // Filter events based on selected day and category
+  const weekendEvents = allEvents.filter(event => {
+    const matchesDay = selectedDay === 'All' || event.day === selectedDay;
+    const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
+    return matchesDay && matchesCategory;
+  });
 
   const categories = ['All', 'Music', 'Culture', 'Sports', 'Food', 'Technology', 'Fitness'];
 
@@ -81,35 +142,24 @@ export default function ThisWeekend({ onNavigate, onEventClick }: ThisWeekendPro
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="flex-1 flex items-center space-x-3 bg-white rounded-xl px-4 py-3 border border-gray-200">
-            <MapPin className="w-5 h-5 text-gray-400" />
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="flex-1 bg-transparent outline-none text-gray-900 cursor-pointer"
+        {/* Day Selection Buttons */}
+        <div className="flex flex-wrap gap-3 mb-8 justify-center">
+          {days.map((day) => (
+            <button
+              key={day}
+              onClick={() => setSelectedDay(day)}
+              className={`px-6 py-3 rounded-full font-semibold transition-all ${
+                selectedDay === day
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-300'
+              }`}
             >
-              <option>Nairobi, Kenya</option>
-              <option>Mombasa, Kenya</option>
-              <option>Nakuru, Kenya</option>
-              <option>Eldoret, Kenya</option>
-              <option>Meru, Kenya</option>
-            </select>
-          </div>
-          <div className="flex items-center space-x-3 bg-white rounded-xl px-4 py-3 border border-gray-200">
-            <Filter className="w-5 h-5 text-gray-400" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-transparent outline-none text-gray-900 cursor-pointer min-w-[120px]"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
+              {day}
+            </button>
+          ))}
         </div>
 
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {weekendEvents.map((event) => (
             <EventCard
