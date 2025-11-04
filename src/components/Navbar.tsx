@@ -153,6 +153,12 @@ export default function Navbar({ onNavigate, currentPage = 'landing' }: NavbarPr
               Calendar
             </button>
             <button
+              onClick={() => { onNavigate('partner-dashboard'); setMobileMenuOpen(false); }}
+              className="block w-full text-left px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg font-medium border border-purple-200"
+            >
+              Partner Dashboard
+            </button>
+            <button
               onClick={() => { onNavigate('become-partner'); setMobileMenuOpen(false); }}
               className="block w-full text-left px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg font-medium"
             >

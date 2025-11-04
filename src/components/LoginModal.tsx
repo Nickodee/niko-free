@@ -28,6 +28,10 @@ export default function LoginModal({ isOpen, onClose, onNavigate, onSwitchToSign
     e.preventDefault();
     // Handle login logic here
     console.log('Login with:', { email, password, keepLoggedIn });
+    
+    // Navigate to user dashboard
+    onClose();
+    onNavigate('user-dashboard');
   };
 
   return (
