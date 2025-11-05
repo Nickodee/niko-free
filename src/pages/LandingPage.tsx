@@ -325,14 +325,14 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
       }}></div>
       
       <div className="relative z-10">
-        <div className="sticky top-0 z-50">
+        <div className="sticky top-0 z-[70]">
           <Navbar onNavigate={onNavigate} currentPage="landing" />
         </div>
-        <div className="">
+        <div className="relative z-[60]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4" data-aos="fade-down">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-2 gap-2 transition-colors duration-200">
+          <div className="flex flex-col md:flex-row items-stretch md:items-center bg-white dark:bg-gray-800 rounded-2xl md:rounded-full  border border-gray-200 dark:border-gray-700 p-2 gap-2 transition-colors duration-200">
             {/* Search Input */}
-            <div className="flex-1 flex items-center space-x-3 px-3 py-2 min-w-0">
+            <div className="flex-1 flex items-center space-x-3 px-3 py-2 min-w-0 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
               <Search className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
               <input
                 type="text"
@@ -348,7 +348,7 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
 
             {/* Location Input */}
             <div className="w-full md:w-80 relative">
-              <div className="flex items-center space-x-3 px-3 py-2">
+              <div className="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
                 <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
                 <input
                   ref={locationInputRef}
@@ -376,7 +376,7 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
               </div>
               
               {showLocationSuggestions && locationSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-64 overflow-y-auto transition-colors duration-200">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-[100] max-h-64 overflow-y-auto transition-colors duration-200">
                   {locationSuggestions.map((suggestion, index) => (
                     <button
                       key={index}

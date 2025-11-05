@@ -205,20 +205,20 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar onNavigate={onNavigate} />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="bg-white rounded-3xl shadow-xl p-12 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 text-green-600" />
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-12 text-center">
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Application Submitted!</h1>
-            <p className="text-xl text-gray-600 mb-4">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Application Submitted!</h1>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
               Thank you for your interest in becoming a partner.
             </p>
-            <div className="rounded-xl p-6 mb-8" style={{ backgroundColor: '#e6f7ff', borderWidth: '2px', borderStyle: 'solid', borderColor: '#27aae2' }}>
+            <div className="rounded-xl p-6 mb-8 dark:bg-gray-700/50" style={{ backgroundColor: '#e6f7ff', borderWidth: '2px', borderStyle: 'solid', borderColor: '#27aae2' }}>
               <p className="text-lg font-semibold mb-2" style={{ color: '#1a8ec4' }}>What's Next?</p>
-              <p className="text-gray-700">
+              <p className="text-gray-700 dark:text-gray-300">
                 Our admin team will review your application within 24 hours. You'll receive an email at <strong>{formData.email}</strong> with the approval status.
               </p>
             </div>
@@ -257,10 +257,10 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
 
       <div className="py-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 text-center">
             Become a Partner
           </h1>
-          <p className="text-lg text-gray-600 text-center mb-8">
+          <p className="text-lg text-gray-600 dark:text-gray-400 text-center mb-8">
             Join thousands of event organizers using Niko Free
           </p>
           
@@ -293,12 +293,12 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
           {currentStep === 1 && (
             <div className="space-y-4">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Basic Information</h2>
-                <p className="text-gray-600">Tell us about your business</p>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Basic Information</h2>
+                <p className="text-gray-600 dark:text-gray-400">Tell us about your business</p>
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <Building2 className="w-4 h-4" />
                   <span>Business/Brand Name *</span>
                 </label>
@@ -307,7 +307,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   required
                   value={formData.businessName}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none transition-colors"
                   style={{ borderColor: formData.businessName ? '#27aae2' : '' }}
                   onFocus={(e) => e.target.style.borderColor = '#27aae2'}
                   onBlur={(e) => { if (!formData.businessName) e.target.style.borderColor = ''; }}
@@ -316,18 +316,18 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <Upload className="w-4 h-4" />
                   <span>Logo Upload</span>
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center transition-colors cursor-pointer"
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-xl p-8 text-center transition-colors cursor-pointer"
                   style={{ borderColor: formData.logo ? '#27aae2' : '' }}
                   onMouseEnter={(e) => e.currentTarget.style.borderColor = '#27aae2'}
                   onMouseLeave={(e) => { if (!formData.logo) e.currentTarget.style.borderColor = ''; }}
                 >
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600 mb-2">Click to upload or drag and drop</p>
-                  <p className="text-sm text-gray-500">PNG, JPG up to 5MB</p>
+                  <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+                  <p className="text-gray-600 dark:text-gray-400 mb-2">Click to upload or drag and drop</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-500">PNG, JPG up to 5MB</p>
                   <input
                     type="file"
                     accept="image/*"
@@ -338,7 +338,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
               </div>
 
               <div className="relative">
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <MapPin className="w-4 h-4" />
                   <span>Location *</span>
                 </label>
@@ -352,24 +352,21 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                     e.target.style.borderColor = '#27aae2';
                   }}
                   onBlur={(e) => { if (!formData.location) e.target.style.borderColor = ''; }}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none transition-colors"
                   style={{ borderColor: formData.location ? '#27aae2' : '' }}
                   placeholder="Search for your location..."
                 />
                 {showLocationSuggestions && locationSuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full mt-2 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-2 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl shadow-lg max-h-60 overflow-y-auto">
                     {locationSuggestions.map((location, index) => (
                       <button
                         key={index}
                         type="button"
                         onClick={() => handleLocationSelect(location)}
-                        className="w-full px-4 py-3 text-left transition-colors flex items-start space-x-2 border-b border-gray-100 last:border-b-0"
-                        style={{ backgroundColor: 'white' }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e6f7ff'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
+                        className="w-full px-4 py-3 text-left transition-colors flex items-start space-x-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         <MapPin className="w-4 h-4 mt-1 flex-shrink-0" style={{ color: '#27aae2' }} />
-                        <span className="text-sm text-gray-900">{location.display_name}</span>
+                        <span className="text-sm text-gray-900 dark:text-gray-100">{location.display_name}</span>
                       </button>
                     ))}
                   </div>
@@ -398,12 +395,12 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
           {currentStep === 2 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Categories & Interests</h2>
-                <p className="text-gray-600">What type of events will you organize?</p>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Categories & Interests</h2>
+                <p className="text-gray-600 dark:text-gray-400">What type of events will you organize?</p>
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-4">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                   <Tag className="w-4 h-4" />
                   <span>Select Categories * (Choose at least one)</span>
                 </label>
@@ -418,7 +415,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                         className={`px-4 py-2 rounded-full border-2 transition-all flex items-center space-x-2 ${
                           isSelected
                             ? 'text-white'
-                            : 'border-gray-200 bg-white text-gray-900'
+                            : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100'
                         }`}
                         style={isSelected ? { 
                           borderColor: '#27aae2', 
@@ -444,7 +441,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <FileText className="w-4 h-4" />
                   <span>Additional Interests (Optional)</span>
                 </label>
@@ -454,7 +451,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                     value={customInterest}
                     onChange={(e) => setCustomInterest(e.target.value)}
                     onKeyPress={handleCustomInterestKeyPress}
-                    className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none transition-colors text-sm"
+                    className="flex-1 px-4 py-2 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none transition-colors text-sm"
                     onFocus={(e) => e.target.style.borderColor = '#27aae2'}
                     onBlur={(e) => e.target.style.borderColor = ''}
                     placeholder="Type an interest and press Enter or click Add"
@@ -493,7 +490,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
               <div className="flex justify-between pt-4">
                 <button
                   onClick={handlePrevious}
-                  className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-bold transition-all flex items-center space-x-2"
+                  className="px-8 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center space-x-2 dark:hover:border-[#27aae2] dark:hover:text-[#27aae2]"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#27aae2';
                     e.currentTarget.style.color = '#27aae2';
@@ -512,7 +509,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center space-x-2 ${
                     canProceedStep2
                       ? 'text-white hover:opacity-90'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                   style={canProceedStep2 ? { backgroundColor: '#27aae2' } : {}}
                 >
@@ -527,12 +524,12 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
           {currentStep === 3 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Contact Details</h2>
-                <p className="text-gray-600">How can we reach you?</p>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Contact Details</h2>
+                <p className="text-gray-600 dark:text-gray-400">How can we reach you?</p>
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <Mail className="w-4 h-4" />
                   <span>Email to Receive RSVPs *</span>
                 </label>
@@ -541,11 +538,10 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   required
                   value={formData.email}
                   onChange={handleEmailChange}
-                  onBlur={() => formData.email && validateEmail(formData.email)}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors ${
+                  className={`w-full px-4 py-3 border-2 rounded-xl dark:bg-gray-800 dark:text-white focus:outline-none transition-colors ${
                     emailError 
                       ? 'border-red-500 focus:border-red-500' 
-                      : 'border-gray-200'
+                      : 'border-gray-200 dark:border-gray-700'
                   }`}
                   onFocus={(e) => { if (!emailError) e.target.style.borderColor = '#27aae2'; }}
                   onBlur={(e) => { 
@@ -561,12 +557,12 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   </p>
                 )}
                 {!emailError && formData.email && (
-                  <p className="text-sm text-gray-500 mt-1">You'll receive event confirmations and attendee notifications here</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">You'll receive event confirmations and attendee notifications here</p>
                 )}
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <Phone className="w-4 h-4" />
                   <span>Contact Phone Number *</span>
                 </label>
@@ -575,10 +571,10 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   required
                   value={formData.phone}
                   onChange={handlePhoneChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors ${
+                  className={`w-full px-4 py-3 border-2 rounded-xl dark:bg-gray-800 dark:text-white focus:outline-none transition-colors ${
                     phoneError 
                       ? 'border-red-500 focus:border-red-500' 
-                      : 'border-gray-200'
+                      : 'border-gray-200 dark:border-gray-700'
                   }`}
                   onFocus={(e) => { if (!phoneError) e.target.style.borderColor = '#27aae2'; }}
                   onBlur={(e) => { 
@@ -594,14 +590,14 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   </p>
                 )}
                 {!phoneError && formData.phone && (
-                  <p className="text-sm text-gray-500 mt-1">This will be displayed to attendees for inquiries</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">This will be displayed to attendees for inquiries</p>
                 )}
               </div>
 
               <div className="flex justify-between pt-4">
                 <button
                   onClick={handlePrevious}
-                  className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-bold transition-all flex items-center space-x-2"
+                  className="px-8 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center space-x-2 dark:hover:border-[#27aae2] dark:hover:text-[#27aae2]"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#27aae2';
                     e.currentTarget.style.color = '#27aae2';
@@ -620,7 +616,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center space-x-2 ${
                     canProceedStep3
                       ? 'text-white hover:opacity-90'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                   style={canProceedStep3 ? { backgroundColor: '#27aae2' } : {}}
                 >
@@ -635,16 +631,16 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Partner Agreement</h2>
-                <p className="text-gray-600">Review and sign the partner contract</p>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Partner Agreement</h2>
+                <p className="text-gray-600 dark:text-gray-400">Review and sign the partner contract</p>
               </div>
 
-              <div className="border-2 rounded-xl p-6" style={{ backgroundColor: '#e6f7ff', borderColor: '#27aae2' }}>
-                <h3 className="font-bold text-gray-900 mb-3 flex items-center space-x-2">
+              <div className="border-2 rounded-xl p-6 dark:bg-gray-800/50" style={{ backgroundColor: '#e6f7ff', borderColor: '#27aae2' }}>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-3 flex items-center space-x-2">
                   <FileText className="w-5 h-5" />
                   <span>Partner Terms & Conditions</span>
                 </h3>
-                <div className="text-sm text-gray-700 space-y-2 mb-4 max-h-60 overflow-y-auto bg-white p-4 rounded-lg">
+                <div className="text-sm text-gray-700 dark:text-gray-300 space-y-2 mb-4 max-h-60 overflow-y-auto bg-white dark:bg-gray-900 p-4 rounded-lg">
                   <p className="font-semibold">By signing this agreement, you agree to:</p>
                   <p>• Pay a 7% commission on all ticket sales processed through Niko Free</p>
                   <p>• Ensure all events comply with local laws and regulations</p>
@@ -670,7 +666,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
               </div>
 
               <div>
-                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-2">
+                <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   <PenTool className="w-4 h-4" />
                   <span>Digital Signature *</span>
                 </label>
@@ -679,28 +675,28 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   required
                   value={formData.signature}
                   onChange={(e) => setFormData({ ...formData, signature: e.target.value })}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none transition-colors font-cursive text-xl"
+                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none transition-colors font-cursive text-xl"
                   onFocus={(e) => e.target.style.borderColor = '#27aae2'}
                   onBlur={(e) => { if (!formData.signature) e.target.style.borderColor = ''; }}
                   placeholder="Type your full name as signature"
                   style={{ fontFamily: 'Brush Script MT, cursive', borderColor: formData.signature ? '#27aae2' : '' }}
                 />
-                <p className="text-sm text-gray-500 mt-1">By typing your name, you agree to sign this contract electronically</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">By typing your name, you agree to sign this contract electronically</p>
               </div>
 
-              <div className="bg-gray-50 border-2 border-gray-200 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-4">
                 <label className="flex items-start space-x-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.acceptTerms}
                     onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
-                    className="mt-1 w-5 h-5 border-2 border-gray-300 rounded focus:ring-2"
+                    className="mt-1 w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-2"
                     style={{ 
                       accentColor: '#27aae2',
                       outlineColor: '#27aae2'
                     }}
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
                     I have read and agree to the Partner Terms & Conditions and Privacy Policy. I understand that my digital signature above constitutes a legally binding agreement.
                   </span>
                 </label>
@@ -709,7 +705,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
               <div className="flex justify-between pt-4">
                 <button
                   onClick={handlePrevious}
-                  className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-bold transition-all flex items-center space-x-2"
+                  className="px-8 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-bold transition-all flex items-center space-x-2 dark:hover:border-[#27aae2] dark:hover:text-[#27aae2]"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.borderColor = '#27aae2';
                     e.currentTarget.style.color = '#27aae2';
@@ -728,7 +724,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                   className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center space-x-2 ${
                     canProceedStep4
                       ? 'text-white'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                   style={canProceedStep4 ? { 
                     background: 'linear-gradient(to right, #27aae2, #1a8ec4)'
