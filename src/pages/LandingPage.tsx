@@ -21,7 +21,9 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
   const [showCantMissLeftArrow, setShowCantMissLeftArrow] = useState(false);
   const [locationSuggestions, setLocationSuggestions] = useState<Array<{display_name: string, lat: string, lon: string}>>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const locationInputRef = React.useRef<HTMLInputElement>(null);
+  const searchContainerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     // Get user's location on component mount
@@ -275,6 +277,18 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
     }
   }, []);
 
+  React.useEffect(() => {
+    // Close search on click outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsSearchExpanded(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const fetchLocationSuggestions = async (query: string) => {
     if (query.length < 3) {
       setLocationSuggestions([]);
@@ -328,205 +342,210 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
         <div className="sticky top-0 z-[70]">
           <Navbar onNavigate={onNavigate} currentPage="landing" />
         </div>
-        <div className="relative z-[60]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4" data-aos="fade-down">
-          <div className="flex flex-col md:flex-row items-stretch md:items-center bg-white dark:bg-gray-800 rounded-2xl md:rounded-full  border border-gray-200 dark:border-gray-700 p-2 gap-2 transition-colors duration-200">
-            {/* Search Input */}
-            <div className="flex-1 flex items-center space-x-3 px-3 py-2 min-w-0 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-              <Search className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-              <input
-                type="text"
-                placeholder="Search events, categories, or interests..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-              />
-            </div>
 
-            {/* Divider - Vertical on desktop, Horizontal on mobile */}
-            <div className="h-px w-full md:h-10 md:w-px bg-gray-300 dark:bg-gray-600"></div>
+        {/* Hero Video Section with Overlay Content */}
+        <div className="relative h-[480px] sm:h-[500px] md:h-[550px] overflow-hidden">
+          {/* Background Video */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/src/video/watermarked_preview.mp4" type="video/mp4" />
+            {/* Fallback image if video doesn't load */}
+            <img 
+              src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=1920" 
+              alt="Events background"
+              className="w-full h-full object-cover"
+            />
+          </video>
 
-            {/* Location Input */}
-            <div className="w-full md:w-80 relative">
-              <div className="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-                <input
-                  ref={locationInputRef}
-                  type="text"
-                  placeholder={locationPlaceholder}
-                  value={selectedLocation}
-                  onChange={(e) => handleLocationChange(e.target.value)}
-                  onFocus={() => {
-                    if (selectedLocation === locationPlaceholder) {
-                      setSelectedLocation('');
-                      setShowLocationSuggestions(true);
-                    }
-                  }}
-                  onBlur={() => {
-                    // Delay to allow clicking on suggestions
-                    setTimeout(() => {
-                      if (selectedLocation === '') {
-                        setSelectedLocation(locationPlaceholder);
-                      }
-                      setShowLocationSuggestions(false);
-                    }, 200);
-                  }}
-                  className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                />
-              </div>
-              
-              {showLocationSuggestions && locationSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-[100] max-h-64 overflow-y-auto transition-colors duration-200">
-                  {locationSuggestions.map((suggestion, index) => (
+          {/* Dark Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
+
+          {/* Content Overlay */}
+          <div className="relative h-full flex flex-col justify-between py-3 sm:py-4 md:py-6">
+            {/* Top Section - Search Bar */}
+            <div className="relative z-[60]">
+              <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2 md:py-3" data-aos="fade-down">
+                <div ref={searchContainerRef} className="relative">
+                  {/* Mobile: Collapsed Search Button */}
+                  {!isSearchExpanded && (
                     <button
-                      key={index}
-                      onClick={() => selectLocationSuggestion(suggestion)}
-                      className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-start space-x-3"
+                      onClick={() => setIsSearchExpanded(true)}
+                      className="md:hidden w-full flex items-center justify-center space-x-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-full border border-gray-200 dark:border-gray-700 px-4 py-2.5 shadow-xl transition-all"
                     >
-                      <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 mt-1" />
-                      <span className="text-sm text-gray-900 dark:text-gray-100">{suggestion.display_name}</span>
+                      <Search className="w-5 h-5" style={{ color: '#27aae2' }} />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Search events...</span>
                     </button>
-                  ))}
-                </div>
-              )}
-            </div>
+                  )}
 
-            {/* Search Button */}
-            <button className="w-full md:w-12 h-12 text-white rounded-full flex items-center justify-center transform hover:scale-105 transition-all flex-shrink-0" style={{ backgroundColor: '#27aae2' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1a8ec4'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#27aae2'}>
-              <Search className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </div>
+                  {/* Expanded Search (Mobile) or Always Visible (Desktop) */}
+                  <div className={`${isSearchExpanded ? 'block' : 'hidden md:flex'} flex-col md:flex-row items-stretch md:items-center bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl md:rounded-full border border-gray-200 dark:border-gray-700 p-1.5 gap-1.5 transition-colors duration-200 shadow-xl`}>
+                    {/* Close Button (Mobile Only) */}
+                    <button
+                      onClick={() => setIsSearchExpanded(false)}
+                      className="md:hidden absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
+                    >
+                      <span className="text-gray-500 text-xl">×</span>
+                    </button>
 
-      {/* Organization Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6" data-aos="fade-up">
-        <div className="relative rounded-3xl overflow-hidden shadow-2xl" style={{ background: 'linear-gradient(to right, #000000, #1a1a1a, #27aae2)' }}>
-          {/* Animated background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0" style={{
-              backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 50%, white 1px, transparent 1px)',
-              backgroundSize: '50px 50px'
-            }}></div>
-          </div>
-          
-          <div className="relative px-8 py-10 md:px-12 md:py-14">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              {/* Left Content */}
-              <div className="text-white space-y-4">
-                <div className="inline-flex items-center space-x-2 backdrop-blur-sm px-4 py-2 rounded-full mb-2" style={{ backgroundColor: 'rgba(39, 170, 226, 0.3)' }}>
-                  <Sparkles className="w-5 h-5 text-yellow-300" />
-                  <span className="font-semibold text-sm">Niko Free</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-                  Discover Amazing Events
-                </h2>
-                <p className="text-lg text-gray-100 leading-relaxed">
-                  Join millions of people discovering and attending incredible events every day. From concerts to conferences, find your next adventure with Niko Free.
-                </p>
-                <div className="flex flex-wrap gap-4 pt-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <Users className="w-6 h-6 text-white" />
+                    {/* Search Input */}
+                    <div className="flex-1 flex items-center space-x-2 px-2 py-1.5 min-w-0 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                      <Search className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                      <input
+                        type="text"
+                        placeholder="Search events..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="flex-1 bg-transparent outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                      />
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">2M+</p>
-                      <p className="text-sm text-gray-100">Active Users</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <Calendar className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">10K+</p>
-                      <p className="text-sm text-gray-100">Events Monthly</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <Heart className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">98%</p>
-                      <p className="text-sm text-gray-100">Satisfaction</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button 
-                    onClick={() => onNavigate('become-partner')}
-                    className="px-6 py-3 bg-white rounded-xl font-bold transform hover:scale-105 transition-all shadow-lg"
-                    style={{ color: '#27aae2' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
-                  >
-                    Become a Partner
-                  </button>
-                  <button 
-                    onClick={() => onNavigate('about')}
-                    className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white border-2 rounded-xl font-bold transition-all"
-                    style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
-                  >
-                    Learn More
-                  </button>
-                </div>
-              </div>
 
-              {/* Right Content - Event Preview Cards */}
-              <div className="hidden md:block relative h-80">
-                <div className="absolute top-0 right-0 w-56 transform rotate-6 hover:rotate-0 transition-transform duration-300">
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
-                    <img
-                      src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=400"
-                      alt="Event"
-                      className="w-full h-32 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-bold text-gray-900 text-sm mb-1">Live Music Festival</h3>
-                      <p className="text-xs text-gray-600">This Weekend</p>
+                    {/* Divider - Vertical on desktop, Horizontal on mobile */}
+                    <div className="h-px w-full md:h-8 md:w-px bg-gray-300 dark:bg-gray-600"></div>
+
+                    {/* Location Input */}
+                    <div className="w-full md:w-64 relative">
+                      <div className="flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                        <input
+                          ref={locationInputRef}
+                          type="text"
+                          placeholder={locationPlaceholder}
+                          value={selectedLocation}
+                          onChange={(e) => handleLocationChange(e.target.value)}
+                          onFocus={() => {
+                            if (selectedLocation === locationPlaceholder) {
+                              setSelectedLocation('');
+                              setShowLocationSuggestions(true);
+                            }
+                          }}
+                          onBlur={() => {
+                            // Delay to allow clicking on suggestions
+                            setTimeout(() => {
+                              if (selectedLocation === '') {
+                                setSelectedLocation(locationPlaceholder);
+                              }
+                              setShowLocationSuggestions(false);
+                            }, 200);
+                          }}
+                          className="flex-1 bg-transparent outline-none text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                        />
+                      </div>
+                      
+                      {showLocationSuggestions && locationSuggestions.length > 0 && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 z-[100] max-h-64 overflow-y-auto transition-colors duration-200">
+                          {locationSuggestions.map((suggestion, index) => (
+                            <button
+                              key={index}
+                              onClick={() => selectLocationSuggestion(suggestion)}
+                              className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-start space-x-3"
+                            >
+                              <MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500 flex-shrink-0 mt-1" />
+                              <span className="text-sm text-gray-900 dark:text-gray-100">{suggestion.display_name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-                <div className="absolute top-16 right-16 w-56 transform -rotate-6 hover:rotate-0 transition-transform duration-300">
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
-                    <img
-                      src="https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?auto=compress&cs=tinysrgb&w=400"
-                      alt="Event"
-                      className="w-full h-32 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-bold text-gray-900 text-sm mb-1">Tech Summit 2025</h3>
-                      <p className="text-xs text-gray-600">Nov 2 • KICC</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute bottom-0 right-8 w-56 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                  <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
-                    <img
-                      src="https://images.pexels.com/photos/3822647/pexels-photo-3822647.jpeg?auto=compress&cs=tinysrgb&w=400"
-                      alt="Event"
-                      className="w-full h-32 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-bold text-gray-900 text-sm mb-1">Yoga in the Park</h3>
-                      <p className="text-xs text-gray-600">Every Morning</p>
-                    </div>
+
+                    {/* Search Button */}
+                    <button 
+                      className="w-full md:w-10 h-10 text-white rounded-full flex items-center justify-center transform hover:scale-105 transition-all flex-shrink-0" 
+                      style={{ backgroundColor: '#27aae2' }} 
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1a8ec4'} 
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#27aae2'}
+                      onClick={() => {
+                        // Handle search action
+                        setIsSearchExpanded(false);
+                      }}
+                    >
+                      <Search className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
+
+            {/* Center Section - Hero Content */}
+            <div className="flex-1 flex items-center overflow-y-auto">
+              <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 w-full py-4">
+                <div className="max-w-3xl mx-auto md:mx-0 text-center md:text-left" data-aos="fade-up">
+                  <div className="inline-flex items-center space-x-2 backdrop-blur-sm px-3 py-1.5 rounded-full mb-2 mx-auto md:mx-0" style={{ backgroundColor: 'rgba(39, 170, 226, 0.3)' }}>
+                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300" />
+                    <span className="font-semibold text-[10px] sm:text-xs text-white">Niko Free</span>
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-3 md:mb-4 leading-tight">
+                    Discover Amazing Events
+                  </h1>
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-100 leading-relaxed mb-3 sm:mb-4 md:mb-6">
+                    Join millions of people discovering and attending incredible events every day. From concerts to conferences, find your next adventure with Niko Free.
+                  </p>
+
+                  {/* Stats */}
+                  <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4 md:gap-6 mb-3 sm:mb-4 md:mb-6">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-base sm:text-xl md:text-2xl font-bold text-white">2M+</p>
+                        <p className="text-[10px] sm:text-xs text-gray-200">Active Users</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-base sm:text-xl md:text-2xl font-bold text-white">10K+</p>
+                        <p className="text-[10px] sm:text-xs text-gray-200">Events Monthly</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-1.5 sm:space-x-2">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-base sm:text-xl md:text-2xl font-bold text-white">98%</p>
+                        <p className="text-[10px] sm:text-xs text-gray-200">Satisfaction</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CTA Buttons */}
+                  <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3">
+                    <button 
+                      onClick={() => onNavigate('become-partner')}
+                      className="px-4 sm:px-6 py-2 sm:py-3 bg-white rounded-lg sm:rounded-xl font-bold text-sm sm:text-base transform hover:scale-105 transition-all shadow-xl"
+                      style={{ color: '#27aae2' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f0f9ff'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffffff'}
+                    >
+                      Become a Partner
+                    </button>
+                    <button 
+                      onClick={() => onNavigate('about')}
+                      className="px-4 sm:px-6 py-2 sm:py-3 bg-white/10 backdrop-blur-sm text-white border-2 rounded-lg sm:rounded-xl font-bold text-sm sm:text-base transition-all"
+                      style={{ borderColor: 'rgba(255, 255, 255, 0.5)' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                    >
+                      Learn More
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {/* Decorative Elements */}
-          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-20 blur-3xl" style={{ backgroundColor: '#27aae2' }}></div>
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full opacity-20 blur-3xl" style={{ backgroundColor: '#27aae2' }}></div>
         </div>
-      </div>
 
-      {/* Featured Events Banner */}
+      {/* Can't Miss Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16" data-aos="fade-up">
+      {/* Featured Events Banner - Commented Out */}
 
       {/* <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-16">
         <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden">
@@ -596,7 +615,6 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
         </div>
       </div> */}
 
-      <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16" data-aos="fade-up">
         <div className="mb-8">
           <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200">Can't Miss!</h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 transition-colors duration-200">Promoted events you shouldn't miss</p>
@@ -803,7 +821,7 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
       </div>
 
       <Footer />
-    </div>
+      </div>
     </div>
   );
 }
