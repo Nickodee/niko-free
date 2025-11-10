@@ -197,14 +197,14 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
   };
 
   const validatePhone = (phone: string) => {
-    // Kenyan phone number format: +254 or 0 followed by 9 digits
-    const phoneRegex = /^(\+254|0)[17]\d{8}$/;
+    // Kenyan (+254) or Ugandan (+256) phone number format: +254/+256 followed by 9 digits, or 0 followed by 9 digits
+    const phoneRegex = /^(\+254|\+256|0)[17]\d{8}$/;
     if (!phone) {
       setPhoneError('Phone number is required');
       return false;
     }
     if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
-      setPhoneError('Please enter a valid Kenyan phone number (e.g., +254 700 000 000 or 0700 000 000)');
+      setPhoneError('Please enter a valid number');
       return false;
     }
     setPhoneError('');
@@ -289,7 +289,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
   if (submitted) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navbar onNavigate={onNavigate} />
+        <Navbar onNavigate={onNavigate} currentPage="become-partner" />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-12 text-center">
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -336,7 +336,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
       }}></div>
       
       <div className="relative z-10">
-        <Navbar onNavigate={onNavigate} />
+        <Navbar onNavigate={onNavigate} currentPage="become-partner" />
 
       <div className="pt-10 ">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -698,7 +698,7 @@ export default function BecomePartner({ onNavigate }: BecomePartnerProps) {
                     if (formData.phone) validatePhone(formData.phone);
                     if (!phoneError && !formData.phone) e.target.style.borderColor = '';
                   }}
-                  placeholder="+254 700 000 000 or 0700 000 000"
+                  placeholder="+254 700 000 000 or +256 700 000 000"
                 />
                 {phoneError && (
                   <p className="text-sm text-red-600 mt-1 flex items-center space-x-1">

@@ -544,12 +544,8 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
       }}></div>
       
       <div className="relative z-10">
-        <div className="sticky top-0 z-[70]">
-          <Navbar onNavigate={onNavigate} currentPage="landing" />
-        </div>
-
         {/* Hero Video Section with Overlay Content */}
-        <div className="relative h-[480px] sm:h-[500px] md:h-[550px] overflow-hidden">
+        <div className="relative h-[550px] sm:h-[570px] md:h-[620px] lg:h-[680px] xl:h-[720px] overflow-hidden">
           {/* Background Video */}
           <video
             autoPlay
@@ -570,11 +566,16 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
           {/* Dark Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
 
+          {/* Navbar on top of video */}
+          <div className="sticky top-0 z-[70] relative">
+            <Navbar onNavigate={onNavigate} currentPage="landing" />
+          </div>
+
           {/* Content Overlay */}
           <div className="relative h-full flex flex-col justify-between py-3 sm:py-4 md:py-6">
             {/* Top Section - Search Bar */}
             <div className="relative z-[60]">
-              <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2 md:py-3" data-aos="fade-down">
+              <div className="max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-1 md:py-1.5" data-aos="fade-down">
                 <div ref={searchContainerRef} className="relative">
                   {/* Mobile: Collapsed Search Button */}
                   {!isSearchExpanded && (
