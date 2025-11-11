@@ -1,5 +1,6 @@
 import { X, Mail } from 'lucide-react';
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -57,20 +58,20 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
     setVerificationCode('');
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] overflow-y-auto">
       {!showEmailModal && !showSignupForm && (
         <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
           {/* Background overlay */}
           <div
-            className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+            className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 backdrop-blur-sm"
             onClick={onClose}
           ></div>
 
           {/* Center modal */}
           <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
-          <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+          <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full relative z-10">
             {/* Close button */}
             <button
               onClick={onClose}
@@ -165,18 +166,18 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
 
       {/* Email Modal - Shows on top of Sign In modal */}
       {showEmailModal && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto">
+        <div className="fixed inset-0 z-[10000] overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             {/* Background overlay */}
             <div
-              className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-80"
+              className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-80 backdrop-blur-sm"
               onClick={handleCloseEmailModal}
             ></div>
 
             {/* Center modal */}
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full relative z-10">
               {/* Close button */}
               <button
                 onClick={handleCloseEmailModal}
@@ -236,18 +237,18 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
 
       {/* Signup Form Modal - Shows after email is entered */}
       {showSignupForm && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto">
+        <div className="fixed inset-0 z-[10000] overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             {/* Background overlay */}
             <div
-              className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-80"
+              className="fixed inset-0 transition-opacity bg-gray-900 bg-opacity-80 backdrop-blur-sm"
               onClick={handleCancelSignup}
             ></div>
 
             {/* Center modal */}
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full relative z-10">
               {/* Close button */}
               <button
                 onClick={handleCancelSignup}
@@ -382,6 +383,7 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
           </div>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 }

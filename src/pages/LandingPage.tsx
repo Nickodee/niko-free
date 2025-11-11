@@ -543,7 +543,7 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
         backgroundSize: '30px 30px'
       }}></div>
       
-      <div className="relative z-10">
+      <div className="relative">
         {/* Hero Video Section with Overlay Content */}
         <div className="relative h-[550px] sm:h-[570px] md:h-[620px] lg:h-[680px] xl:h-[720px] overflow-hidden">
           {/* Background Video */}
@@ -567,7 +567,7 @@ export default function LandingPage({ onNavigate, onEventClick }: LandingPagePro
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
 
           {/* Navbar on top of video */}
-          <div className="sticky top-0 z-[70] relative">
+          <div className="sticky top-0 z-[70]">
             <Navbar onNavigate={onNavigate} currentPage="landing" />
           </div>
 
