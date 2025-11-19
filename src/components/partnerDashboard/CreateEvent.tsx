@@ -1,4 +1,4 @@
-import { useState } from 'react';
+mport { useState, useEffect } from 'react';
 import { 
   X, 
   MapPin, 
@@ -17,12 +17,17 @@ import {
   Trash2,
   Check,
   Globe,
-  Video
+  Video,
+  AlertCircle
 } from 'lucide-react';
+import { createEvent, getEvent, updateEvent } from '../../services/partnerService';
+import { API_BASE_URL, API_ENDPOINTS } from '../../config/api';
 
 interface CreateEventProps {
   isOpen: boolean;
   onClose: () => void;
+  onEventCreated?: () => void;
+  eventId?: number | null; // If provided, we're editing
 }
 
 interface EventFormData {
@@ -57,8 +62,7 @@ interface EventFormData {
   isFree: boolean;
   ticketTypes: TicketType[];
   
-  // Step 7: Hosts & Promo
-  hosts: Host[];
+  // Step 7: Promo Codes (Hosts removed)
   promoCodes: PromoCode[];
 }
 
@@ -77,6 +81,7 @@ interface TicketType {
   timeslot?: string; // e.g., "9:00 AM - 10:00 AM"
   price: number;
   quantity: number;
+  vatIncluded: boolean;
 }
 
 interface Host {
@@ -93,31 +98,18 @@ interface PromoCode {
   discountType: 'percentage' | 'fixed';
   maxUses: number;
   expiryDate: string;
+  existingId?: number; // For editing existing promo codes
 }
 
-const predefinedCategories = [
-  'Explore Kenya',
-  'Sports & Fitness',
-  'Social Activities',
-  'Hobbies & Interests',
-  'Religious',
-  'Autofest',
-  'Health & Wellbeing',
-  'Music & Dance',
-  'Culture',
-  'Pets & Animals',
-  'Coaching & Support',
-  'Business & Networking',
-  'Technology',
-  'Live Plays',
-  'Art & Photography',
-  'Shopping',
-  'Gaming'
-];
+// Categories will be fetched from API
 
 export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
-  const [showSuccess, setShowSuccess] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingEvent, setIsLoadingEvent] = useState(false);
+  const [error, setError] = useState('');
+  const [categories, setCategories] = useState<any[]>([]);
+  const isEditMode = !!eventId;
   const [formData, setFormData] = useState<EventFormData>({
     locationType: 'physical',
     locationName: '',
@@ -138,52 +130,10 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
     isUnlimited: true,
     isFree: true,
     ticketTypes: [],
-    hosts: [],
     promoCodes: []
   });
 
   const totalSteps = 7;
-
-  // Custom ticket form (Step 6)
-  const [showCustomTicketForm, setShowCustomTicketForm] = useState(false);
-  const [customTicket, setCustomTicket] = useState<Partial<TicketType>>({
-    name: '',
-    ticketStructure: 'basic',
-    price: 0,
-    quantity: 0
-  });
-
-  const handleCustomTicketSave = () => {
-    const name = (customTicket.name || '').trim();
-    const price = Number(customTicket.price) || 0;
-    const quantity = Number(customTicket.quantity) || 0;
-    if (!name) {
-      alert('Please enter a ticket name');
-      return;
-    }
-
-    const newTicket: TicketType = {
-      id: Date.now().toString(),
-      name,
-      ticketStructure: (customTicket.ticketStructure as TicketType['ticketStructure']) || 'basic',
-      price,
-      quantity,
-      classType: customTicket.classType,
-      loyaltyType: customTicket.loyaltyType,
-      seasonType: customTicket.seasonType,
-      seasonDuration: customTicket.seasonDuration,
-      timeslot: customTicket.timeslot
-    };
-
-  setFormData(prev => ({ ...prev, ticketTypes: [newTicket, ...prev.ticketTypes] }));
-    setShowCustomTicketForm(false);
-    setCustomTicket({ name: '', ticketStructure: 'basic', price: 0, quantity: 0 });
-  };
-
-  const handleCustomTicketCancel = () => {
-    setShowCustomTicketForm(false);
-    setCustomTicket({ name: '', ticketStructure: 'basic', price: 0, quantity: 0 });
-  };
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -197,14 +147,6 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
     }
   };
 
-  const handleCategoryToggle = (category: string) => {
-    setFormData(prev => ({
-      ...prev,
-      closedCategories: prev.closedCategories.includes(category)
-        ? prev.closedCategories.filter(c => c !== category)
-        : [...prev.closedCategories, category]
-    }));
-  };
 
   const handleInterestAdd = (interest: string) => {
     if (formData.openInterests.length < 10 && interest.trim() && !formData.openInterests.includes(interest.trim())) {
@@ -341,11 +283,8 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
   const handleSubmit = () => {
     // Submit event for approval
     console.log('Event submitted:', formData);
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      onClose();
-    }, 2500);
+    alert('Event submitted for approval! You will be notified once it\'s approved.');
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -380,7 +319,7 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
           <div className="bg-gradient-to-r from-[#27aae2] to-[#1e8bb8] px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-2xl font-bold text-white">Create New Event</h3>
+                <h3 className="text-2xl font-bold text-white">{isEditMode ? 'Edit Event' : 'Create New Event'}</h3>
                 <p className="text-sm text-white/80 mt-1">Step {currentStep} of {totalSteps}</p>
               </div>
               <button
@@ -401,7 +340,7 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
           </div>
 
           {/* Content */}
-          <div className="px-6 py-6 max-h-[60vh] overflow-y-auto text-gray-900 dark:text-gray-100">
+          <div className="px-6 py-6 max-h-[60vh] overflow-y-auto">
             {/* Step 1: Location */}
             {currentStep === 1 && (
               <div className="space-y-6">
@@ -585,25 +524,37 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
                   {/* Closed Categories */}
                   <div className="mb-6">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Select Categories (Multiple Choice)
+                      Select Category
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {predefinedCategories.map(category => (
-                        <button
-                          key={category}
-                          onClick={() => handleCategoryToggle(category)}
-                          className={`px-4 py-2 rounded-lg border-2 transition-all text-sm font-medium ${
-                            formData.closedCategories.includes(category)
-                              ? 'border-[#27aae2] bg-[#27aae2] text-white'
-                              : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-[#27aae2]'
-                          }`}
-                        >
-                          {formData.closedCategories.includes(category) && (
-                            <Check className="w-4 h-4 inline mr-1" />
-                          )}
-                          {category}
-                        </button>
-                      ))}
+                      {categories.length > 0 ? (
+                        categories.map(category => (
+                          <button
+                            key={category.id}
+                            onClick={() => {
+                              // Only allow one category selection
+                              setFormData(prev => ({
+                                ...prev,
+                                closedCategories: prev.closedCategories.includes(category.id.toString())
+                                  ? []
+                                  : [category.id.toString()]
+                              }));
+                            }}
+                            className={`px-4 py-2 rounded-lg border-2 transition-all text-sm font-medium ${
+                              formData.closedCategories.includes(category.id.toString())
+                                ? 'border-[#27aae2] bg-[#27aae2] text-white'
+                                : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-[#27aae2]'
+                            }`}
+                          >
+                            {formData.closedCategories.includes(category.id.toString()) && (
+                              <Check className="w-4 h-4 inline mr-1" />
+                            )}
+                            {category.name}
+                          </button>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 dark:text-gray-400">Loading categories...</p>
+                      )}
                     </div>
                   </div>
 
@@ -1132,25 +1083,24 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
               </div>
             )}
 
-            {/* Step 7: Hosts & Promo Codes */}
+            {/* Step 7: Promo Codes */}
             {currentStep === 7 && (
               <div className="space-y-6">
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    <Users className="w-5 h-5 inline mr-2" />
-                    Hosts & Promotions
+                    Promo Codes
                   </h4>
 
                   {/* Hosts Section */}
                   <div className="mb-8">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                      Add Event Hosts (Max 3)
+                      Add Event Hosts (Max 2)
                     </label>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                       Hosts must be Niko Free members and will receive all RSVPs, bookings, and bucket lists.
                     </p>
 
-                    {formData.hosts.length < 3 && (
+                    {formData.hosts.length < 2 && (
                       <div className="mb-4">
                         <input
                           type="text"
@@ -1345,6 +1295,8 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
                 </div>
               </div>
             )}
+              </>
+            )}
           </div>
 
           {/* Footer */}
@@ -1370,10 +1322,25 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
               ) : (
                 <button
                   onClick={handleSubmit}
-                  className="flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                  disabled={isLoading}
+                  className={`flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors ${
+                    isLoading ? 'opacity-70 cursor-not-allowed' : ''
+                  }`}
                 >
-                  <Check className="w-5 h-5" />
-                  Submit for Approval
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Submitting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5" />
+                      <span>{isEditMode ? 'Update Event' : 'Submit for Approval'}</span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
