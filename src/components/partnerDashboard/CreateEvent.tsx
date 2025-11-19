@@ -1,4 +1,4 @@
-mport { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   X, 
   MapPin, 
@@ -1294,8 +1294,6 @@ export default function CreateEvent({ isOpen, onClose }: CreateEventProps) {
                   </div>
                 </div>
               </div>
-            )}
-              </>
             )}
           </div>
 
