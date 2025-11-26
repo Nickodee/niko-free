@@ -1,10 +1,13 @@
 import { Zap, TrendingUp, Star } from 'lucide-react';
 import { useState } from 'react';
+import { addDays, format } from 'date-fns';
 
 export default function BoostEvent() {
   const [selectedEvent, setSelectedEvent] = useState('');
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [durationCount, setDurationCount] = useState<number>(1);
+  const [startDate, setStartDate] = useState<string>('');
+  const [startTime, setStartTime] = useState<string>('');
 
   const events = [
     { id: '1', name: 'Summer Music Festival 2024' },
@@ -65,6 +68,13 @@ export default function BoostEvent() {
       color: 'from-orange-600 to-red-600'
     }
   ];
+
+  const calculateEndDate = () => {
+    if (!startDate || !startTime) return '';
+    const startDateTime = new Date(`${startDate}T${startTime}`);
+    const endDateTime = addDays(startDateTime, durationCount);
+    return format(endDateTime, 'yyyy-MM-dd') + '  ' + 'Time:' + startTime; // Add space between date and time
+  };
 
   return (
     <div className="space-y-6">
@@ -197,6 +207,35 @@ export default function BoostEvent() {
                 {boostTiers.find(t => t.id === selectedTier)?.name}
               </span>
             </div>
+
+            <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+              <span className="text-gray-600 dark:text-gray-400">Start Date</span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-40 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-center"
+              />
+            </div>
+
+            <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+              <span className="text-gray-600 dark:text-gray-400">Start Time</span>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="w-40 px-3 py-2 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg text-center"
+              />
+            </div>
+
+            {startDate && startTime && (
+              <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
+                <span className="text-gray-600 dark:text-gray-400">End Date and Time</span>
+                <span className="font-semibold text-gray-900 dark:text-white">
+                  {calculateEndDate()}
+                </span>
+              </div>
+            )}
 
             <div className="flex justify-between items-center py-3 border-b border-gray-200 dark:border-gray-700">
               <span className="text-gray-600 dark:text-gray-400">Duration</span>
