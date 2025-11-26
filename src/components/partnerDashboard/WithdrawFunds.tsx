@@ -150,7 +150,7 @@ export default function WithdrawFunds({ isOpen, onClose, availableBalance }: Wit
                   <div className="flex-1 text-left">
                     <h4 className="text-lg font-bold text-gray-900 dark:text-white">M-Pesa</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Instant transfer to your M-Pesa number</p>
-                    <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-1">⚡ Instant • No fees</p>
+                    <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-1">⚡ Instant</p>
                   </div>
                 </div>
               </button>

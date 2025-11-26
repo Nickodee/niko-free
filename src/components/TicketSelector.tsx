@@ -65,6 +65,35 @@ export default function TicketSelector({
 
   const getQuantity = (id: string) => quantities[id] ?? 1;
   const setQuantityFor = (id: string, next: number) => setQuantities(prev => ({ ...prev, [id]: next }));
+
+  // Calculate total price for a ticket
+  const getTotalPrice = (ticket: { price: number }, quantity: number) => {
+    return ticket.price * quantity;
+  };
+
+  // Get selected ticket details
+  const getSelectedTicket = () => {
+    if (ticketType === 'uniform' && tickets.uniform.length > 0) {
+      return tickets.uniform[0];
+    }
+    if (ticketType === 'class') {
+      return tickets.class.find(t => t.id === selectedTicketType);
+    }
+    if (ticketType === 'loyalty') {
+      return tickets.loyalty.find(t => t.id === selectedTicketType);
+    }
+    if (ticketType === 'season') {
+      return tickets.season.find(t => t.id === selectedTicketType);
+    }
+    if (ticketType === 'timeslot') {
+      return tickets.timeslot.find(t => t.id === selectedTimeSlot);
+    }
+    return null;
+  };
+
+  const selectedTicket = getSelectedTicket();
+  const selectedQuantity = selectedTicket ? getQuantity(selectedTicket.id) : 1;
+  const totalPrice = selectedTicket ? getTotalPrice(selectedTicket, selectedQuantity) : 0;
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
@@ -93,7 +122,8 @@ export default function TicketSelector({
                   <p className="text-xs text-gray-500 dark:text-gray-400">{ticket.available} tickets left</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-[#27aae2]">KES {ticket.price.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[#27aae2]">KES {getTotalPrice(ticket, getQuantity(ticket.id)).toLocaleString()}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">KES {ticket.price.toLocaleString()} each × {getQuantity(ticket.id)}</p>
                 </div>
               </div>
               <ul className="space-y-1">
@@ -156,7 +186,8 @@ export default function TicketSelector({
                   <p className="text-xs text-gray-500 dark:text-gray-400">{ticket.available} left</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-[#27aae2]">KES {ticket.price.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[#27aae2]">KES {getTotalPrice(ticket, getQuantity(ticket.id)).toLocaleString()}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">KES {ticket.price.toLocaleString()} each × {getQuantity(ticket.id)}</p>
                 </div>
               </div>
               <div className="mt-3 flex items-center gap-2">
@@ -214,7 +245,8 @@ export default function TicketSelector({
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{ticket.available} available</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-[#27aae2]">KES {ticket.price.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-[#27aae2]">KES {getTotalPrice(ticket, getQuantity(ticket.id)).toLocaleString()}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">KES {ticket.price.toLocaleString()} each × {getQuantity(ticket.id)}</p>
                 </div>
               </div>
               <div className="mt-3 flex items-center gap-2">
@@ -261,7 +293,8 @@ export default function TicketSelector({
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {slot.available > 0 ? `${slot.available} slots left` : 'Fully booked'}
                 </p>
-                <p className="text-sm font-bold text-[#27aae2] mt-1">KES {slot.price}</p>
+                <p className="text-sm font-bold text-[#27aae2] mt-1">KES {getTotalPrice(slot, getQuantity(slot.id)).toLocaleString()}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">KES {slot.price} each × {getQuantity(slot.id)}</p>
                 <div className="mt-3 flex items-center justify-center gap-2">
                   <button
                     onClick={(e) => { e.stopPropagation(); const cur = getQuantity(slot.id); setQuantityFor(slot.id, Math.max(1, cur - 1)); }}
@@ -290,9 +323,9 @@ export default function TicketSelector({
         <div className="mb-6">
           <div className="flex items-baseline justify-between mb-2">
             <span className="text-3xl font-bold text-gray-900 dark:text-white">
-              {tickets.uniform[0].price === 0 ? 'Free' : `KES ${tickets.uniform[0].price.toLocaleString()}`}
+              {getTotalPrice(tickets.uniform[0], getQuantity(tickets.uniform[0].id)) === 0 ? 'Free' : `KES ${getTotalPrice(tickets.uniform[0], getQuantity(tickets.uniform[0].id)).toLocaleString()}`}
             </span>
-            <span className="text-sm text-gray-600 dark:text-gray-400">per ticket</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">total ({getQuantity(tickets.uniform[0].id)} × KES {tickets.uniform[0].price.toLocaleString()})</span>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {tickets.uniform[0].available || 'Unlimited'} tickets available
@@ -317,6 +350,27 @@ export default function TicketSelector({
         </div>
       )}
 
+      {/* Price Summary */}
+      {selectedTicket && (
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {selectedTicket.name} × {selectedQuantity}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                KES {selectedTicket.price.toLocaleString()} each
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">
+                KES {totalPrice.toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={onBuyTicket}
         disabled={ticketType !== 'uniform' && !selectedTicketType && !selectedTimeSlot}
@@ -328,7 +382,10 @@ export default function TicketSelector({
             : 'bg-gradient-to-r from-[#27aae2] to-[#1e8bb8] text-white hover:shadow-xl'
         }`}
       >
-        {isRSVPed ? 'Ticket Purchased!' : 'Buy Ticket'}
+        {isRSVPed 
+          ? (totalPrice === 0 ? 'RSVP Confirmed!' : 'Ticket Purchased!') 
+          : (totalPrice === 0 ? 'RSVP' : 'Buy Ticket')
+        }
       </button>
     </div>
   );
