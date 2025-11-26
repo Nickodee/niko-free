@@ -323,6 +323,7 @@ export default function LandingPage({
                     event.ticket_types[0].price
                   ).toLocaleString()}`
                 : "TBA",
+              inBucketlist: event.in_bucketlist || false,
             };
           });
           setUpcomingEvents(events);
@@ -394,6 +395,7 @@ export default function LandingPage({
                     event.ticket_types[0].price
                   ).toLocaleString()}`
                 : "TBA",
+              inBucketlist: event.in_bucketlist || false,
             };
           });
           setUpcomingEvents(events);
@@ -446,6 +448,7 @@ export default function LandingPage({
               : event.ticket_types?.[0]?.price
               ? `KES ${parseInt(event.ticket_types[0].price).toLocaleString()}`
               : "TBA",
+            inBucketlist: event.in_bucketlist || false,
           };
         });
         setCantMissEvents(events);
@@ -521,6 +524,7 @@ export default function LandingPage({
               : event.ticket_types?.[0]?.price
               ? `KES ${parseInt(event.ticket_types[0].price).toLocaleString()}`
               : "TBA",
+            inBucketlist: event.in_bucketlist || false,
           };
         });
         setUpcomingEvents(events);
