@@ -53,6 +53,7 @@ export const API_ENDPOINTS = {
     profile: '/api/partners/profile',
     events: '/api/partners/events',
     event: (id: number) => `/api/partners/events/${id}`,
+    promoteEvent: (id: number) => `/api/partners/events/${id}/promote`,
     uploadLogo: '/api/partners/logo',
     analytics: '/api/partners/analytics',
     changePassword: '/api/partners/change-password',
@@ -63,6 +64,7 @@ export const API_ENDPOINTS = {
     list: '/api/events',
     search: '/api/events/search',
     featured: '/api/events/featured',
+    promoted: '/api/events/promoted',
     detail: (id: number) => `/api/events/${id}`,
     categories: '/api/events/categories',
     locations: '/api/events/locations',
@@ -115,5 +117,28 @@ export const API_ENDPOINTS = {
  */
 export const buildUrl = (endpoint: string): string => {
   return `${API_BASE_URL}${endpoint}`;
+};
+
+/**
+ * Get a valid image URL from poster_image field
+ * Handles base64 data URIs, relative paths, and absolute URLs
+ */
+export const getImageUrl = (posterImage: string | null | undefined): string => {
+  if (!posterImage) {
+    return 'https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?auto=compress&cs=tinysrgb&w=1200';
+  }
+  
+  // Skip base64 data URIs - they shouldn't be in the database
+  if (posterImage.startsWith('data:image')) {
+    return 'https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?auto=compress&cs=tinysrgb&w=1200';
+  }
+  
+  // Already a full URL
+  if (posterImage.startsWith('http')) {
+    return posterImage;
+  }
+  
+  // Relative path - construct full URL
+  return `${API_BASE_URL}${posterImage.startsWith('/') ? '' : '/'}${posterImage}`;
 };
 

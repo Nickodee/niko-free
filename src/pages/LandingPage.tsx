@@ -30,6 +30,7 @@ import EventCard from "../components/EventCard";
 import PartnerLoginModal from "../components/PartnerLoginModal";
 import {
   getFeaturedEvents,
+  getPromotedEvents,
   getEvents,
   getCategories,
 } from "../services/eventService";
@@ -412,12 +413,13 @@ export default function LandingPage({
     }
   }, [selectedCategory]);
 
-  // Fetch featured events (Can't Miss)
+  // Fetch promoted events (Can't Miss)
   useEffect(() => {
-    const fetchFeaturedEvents = async () => {
+    const fetchPromotedEvents = async () => {
       try {
         setIsLoadingEvents(true);
-        const response = await getFeaturedEvents(10);
+        // Get promoted events
+        const response = await getPromotedEvents();
         const events = (response.events || []).map((event: any) => {
           const startDate = event.start_date
             ? new Date(event.start_date)
@@ -455,9 +457,10 @@ export default function LandingPage({
             inBucketlist: event.in_bucketlist || false,
           };
         });
+
         setCantMissEvents(events);
       } catch (err) {
-        console.error("Error fetching featured events:", err);
+        console.error("Error fetching promoted events:", err);
         // Keep empty array on error
         setCantMissEvents([]);
       } finally {
@@ -465,7 +468,7 @@ export default function LandingPage({
       }
     };
 
-    fetchFeaturedEvents();
+    fetchPromotedEvents();
   }, []);
 
   // Fetch upcoming events for categories section
@@ -1279,7 +1282,7 @@ export default function LandingPage({
             ) : cantMissEvents.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-600 dark:text-gray-400">
-                  No featured events available
+                  No events
                 </p>
               </div>
             ) : (
