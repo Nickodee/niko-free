@@ -551,6 +551,47 @@ export const updatePartnerProfile = async (profileData: any): Promise<any> => {
 };
 
 /**
+ * Promote event to Can't Miss section
+ */
+export const promoteEvent = async (
+  eventId: number,
+  daysCount: number,
+  isFree: boolean,
+  phoneNumber?: string
+): Promise<any> => {
+  const token = getPartnerToken();
+  if (!token) {
+    throw new Error('Not authenticated');
+  }
+
+  const payload: any = {
+    days_count: daysCount,
+    is_free: isFree
+  };
+
+  if (!isFree && phoneNumber) {
+    payload.phone_number = phoneNumber;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.partner.promoteEvent(eventId)}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to promote event');
+  }
+
+  return data;
+};
+
+/**
  * Upload partner logo
  */
 export const uploadPartnerLogo = async (file: File): Promise<any> => {

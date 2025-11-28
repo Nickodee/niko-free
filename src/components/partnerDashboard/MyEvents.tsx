@@ -1,8 +1,9 @@
-import { Calendar, MapPin, Users, Eye, Plus, Trash2, Edit } from 'lucide-react';
+import { Calendar, MapPin, Users, Eye, Plus, Trash2, Edit, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getPartnerEvents, deleteEvent } from '../../services/partnerService';
 import { API_BASE_URL } from '../../config/api';
 import CreateEvent from './CreateEvent';
+import PromoteEventModal from './PromoteEventModal';
 
 interface MyEventsProps {
   onCreateEvent: () => void;
@@ -15,6 +16,8 @@ export default function MyEvents({ onCreateEvent }: MyEventsProps) {
   const [error, setError] = useState('');
   const [editEventId, setEditEventId] = useState<number | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [promoteEventId, setPromoteEventId] = useState<number | null>(null);
+  const [isPromoteModalOpen, setIsPromoteModalOpen] = useState(false);
   // Fetch events on mount and when filter changes
   useEffect(() => {
     fetchEvents();
@@ -106,6 +109,20 @@ export default function MyEvents({ onCreateEvent }: MyEventsProps) {
     fetchEvents();
   };
 
+  const handlePromoteEvent = (eventId: number) => {
+    setPromoteEventId(eventId);
+    setIsPromoteModalOpen(true);
+  };
+
+  const handleClosePromoteModal = () => {
+    setPromoteEventId(null);
+    setIsPromoteModalOpen(false);
+  };
+
+  const handlePromotionSuccess = () => {
+    fetchEvents(); // Refresh events list
+  };
+
   const getEventStatus = (event: any): string => {
     if (event.status === 'pending') return 'pending';
     if (event.status === 'rejected') return 'rejected';
@@ -141,6 +158,10 @@ export default function MyEvents({ onCreateEvent }: MyEventsProps) {
 
   const getEventImage = (event: any): string => {
     if (event.poster_image) {
+      // Skip base64 data URIs - they shouldn't be in the database
+      if (event.poster_image.startsWith('data:image')) {
+        return 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=250&fit=crop';
+      }
       if (event.poster_image.startsWith('http')) {
         return event.poster_image;
       }
@@ -260,6 +281,28 @@ export default function MyEvents({ onCreateEvent }: MyEventsProps) {
                   </div>
 
                   <div className="space-y-2">
+                    {/* Promo Codes Display */}
+                    {event.promo_codes && event.promo_codes.length > 0 && (
+                      <div className="mb-2">
+                        <div className="flex flex-wrap gap-1">
+                          {event.promo_codes.slice(0, 3).map((promo: any, idx: number) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-medium"
+                              title={`${promo.code}: ${promo.discount_type === 'percentage' ? promo.discount_value + '%' : 'KES ' + promo.discount_value} off`}
+                            >
+                              {promo.code}
+                            </span>
+                          ))}
+                          {event.promo_codes.length > 3 && (
+                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs">
+                              +{event.promo_codes.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
                     {totalTickets > 0 && (
                       <>
                         <div className="flex justify-between items-center text-xs">
@@ -292,6 +335,16 @@ export default function MyEvents({ onCreateEvent }: MyEventsProps) {
 
                       {/* Action Buttons */}
                       <div className="flex items-center gap-4">
+                        {event.status === 'approved' && (
+                          <button 
+                            onClick={() => handlePromoteEvent(event.id)}
+                            className="flex items-center space-x-1 text-purple-600 hover:text-purple-700 transition-colors"
+                            title="Promote event to Can't Miss section"
+                          >
+                            <Sparkles className="w-4 h-4" />
+                            <span className="text-xs hidden sm:inline">Promote</span>
+                          </button>
+                        )}
                         <button 
                           onClick={() => handleEditEvent(event.id)}
                           className="flex items-center space-x-1 text-[#27aae2] hover:text-[#1e8bc3] transition-colors"
@@ -340,6 +393,16 @@ export default function MyEvents({ onCreateEvent }: MyEventsProps) {
           handleCloseEditModal();
         }}
       />
+
+      {/* Promote Event Modal */}
+      {promoteEventId && (
+        <PromoteEventModal
+          isOpen={isPromoteModalOpen}
+          onClose={handleClosePromoteModal}
+          event={events.find(e => e.id === promoteEventId)}
+          onSuccess={handlePromotionSuccess}
+        />
+      )}
     </div>
   );
 }

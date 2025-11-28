@@ -73,6 +73,34 @@ export const getFeaturedEvents = async (limit: number = 10): Promise<any> => {
 };
 
 /**
+ * Get promoted events (Can't Miss section)
+ */
+export const getPromotedEvents = async (): Promise<any> => {
+  const url = `${API_BASE_URL}${API_ENDPOINTS.events.promoted}`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Failed to fetch promoted events' }));
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    // Handle network errors
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('Unable to connect to server. Please make sure the API server is running.');
+    }
+    throw error;
+  }
+};
+
+/**
  * Get events by category
  */
 export const getEventsByCategory = async (categorySlug: string, limit: number = 20): Promise<any> => {

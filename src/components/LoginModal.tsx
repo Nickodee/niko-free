@@ -1,4 +1,4 @@
-import { X, Mail, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, Mail, Eye, EyeOff, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { register, login, forgotPassword, partnerLogin } from '../services/authService';
@@ -20,6 +20,7 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -75,6 +76,7 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
           password,
           first_name: firstName.trim(),
           last_name: lastName.trim(),
+          phone_number: phoneNumber.trim() || undefined,
         };
 
         console.log('Sending registration data:', {
@@ -127,6 +129,7 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
     setEmail('');
     setFirstName('');
     setLastName('');
+    setPhoneNumber('');
     setPassword('');
     setConfirmPassword('');
     setError('');
@@ -440,6 +443,41 @@ export default function LoginModal({ isOpen, onClose, onNavigate }: LoginModalPr
                       />
                     </div>
                   </div>
+                  )}
+
+                  {/* Phone Number - Only for Sign Up */}
+                  {isSignUp && (
+                    <div>
+                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <Phone className="inline w-4 h-4 mr-1" />
+                        Phone Number <span className="text-gray-500 text-xs font-normal">(Optional but recommended)</span>
+                      </label>
+                      <input
+                        type="tel"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        autoComplete="tel"
+                        value={phoneNumber}
+                        onChange={(e) => {
+                          // Allow only numbers, spaces, dashes, and +
+                          const value = e.target.value.replace(/[^\d\s\-\+]/g, '');
+                          setPhoneNumber(value);
+                        }}
+                        placeholder="0712345678 or 254712345678"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:ring-2 focus:border-transparent outline-none transition-all"
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#27aae2';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(39, 170, 226, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        📱 We'll send SMS notifications about your bookings, payments, and event reminders
+                      </p>
+                    </div>
                   )}
 
                   {/* Password */}
