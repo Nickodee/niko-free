@@ -59,6 +59,7 @@ export default function LandingPage({
   const cantMissRef = React.useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showCantMissLeftArrow, setShowCantMissLeftArrow] = useState(false);
+  const [currentCantMissSlide, setCurrentCantMissSlide] = useState(0);
   const [locationSuggestions, setLocationSuggestions] = useState<
     Array<{ display_name: string; lat: string; lon: string }>
   >([]);
@@ -719,6 +720,21 @@ export default function LandingPage({
   const handleCantMissScroll = () => {
     if (cantMissRef.current) {
       setShowCantMissLeftArrow(cantMissRef.current.scrollLeft > 0);
+      
+      // Calculate current slide based on scroll position
+      // Map scroll position to one of 3 dots
+      const scrollLeft = cantMissRef.current.scrollLeft;
+      const maxScroll = cantMissRef.current.scrollWidth - cantMissRef.current.clientWidth;
+      
+      // Divide the scroll range into 3 sections
+      let slideIndex = 0;
+      if (scrollLeft > maxScroll * 0.66) {
+        slideIndex = 2;
+      } else if (scrollLeft > maxScroll * 0.33) {
+        slideIndex = 1;
+      }
+      
+      setCurrentCantMissSlide(slideIndex);
     }
   };
 
@@ -750,7 +766,7 @@ export default function LandingPage({
   // Auto-scroll Can't Miss events
   React.useEffect(() => {
     const element = cantMissRef.current;
-    if (!element) return;
+    if (!element || cantMissEvents.length === 0) return;
 
     let isPaused = false;
     let pauseTimeout: NodeJS.Timeout;
@@ -803,7 +819,7 @@ export default function LandingPage({
       element.removeEventListener("mouseleave", handleMouseLeave);
       element.removeEventListener("scroll", handleUserScroll);
     };
-  }, []);
+  }, [cantMissEvents.length]);
 
   React.useEffect(() => {
     // Close search on click outside
@@ -1417,25 +1433,51 @@ export default function LandingPage({
             {/* Scroll Arrows for Can't Miss */}
             <button
               onClick={() => scrollCantMiss("left")}
-              className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white rounded-full items-center justify-center shadow-xl hover:bg-gray-50 transition-all z-10 ${
+              className={`hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white dark:bg-gray-800 rounded-full items-center justify-center shadow-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all z-10 ${
                 showCantMissLeftArrow
                   ? "opacity-100"
                   : "opacity-0 pointer-events-none"
               }`}
             >
-              <ChevronLeft className="w-6 h-6 text-gray-900" />
+              <ChevronLeft className="w-6 h-6 text-gray-900 dark:text-white" />
             </button>
             <button
               onClick={() => scrollCantMiss("right")}
-              className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white rounded-full items-center justify-center shadow-xl hover:bg-gray-50 transition-all z-10"
+              className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white dark:bg-gray-800 rounded-full items-center justify-center shadow-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all z-10"
             >
-              <ChevronRight className="w-6 h-6 text-gray-900" />
+              <ChevronRight className="w-6 h-6 text-gray-900 dark:text-white" />
             </button>
+
+            {/* Pagination Dots */}
+            {cantMissEvents.length > 0 && (
+              <div className="flex justify-center mt-2 gap-2">
+                {[0, 1, 2].map((index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      if (cantMissRef.current) {
+                        const containerWidth = cantMissRef.current.clientWidth;
+                        cantMissRef.current.scrollTo({
+                          left: containerWidth * index,
+                          behavior: "smooth",
+                        });
+                      }
+                    }}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      currentCantMissSlide === index
+                        ? "w-8 bg-[#27aae2]"
+                        : "w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
         <div
-          className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-10 py-16"
+          className="max-w-7xl mx-auto px-1 sm:px-6 lg:px-10 py-6 sm:py-10"
           data-aos="fade-up"
         >
           <div className="text-center mb-12">

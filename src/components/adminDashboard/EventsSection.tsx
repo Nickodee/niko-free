@@ -386,18 +386,6 @@ export default function EventsSection({}: EventsSectionProps) {
                   <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">EARLYBIRD - 20% off</span>
                 </div>
               </div>
-
-              {/* Approve/Reject Buttons */}
-              <div className="flex gap-4 mt-6 justify-end">
-                <button className="px-6 py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Approve</span>
-                </button>
-                <button className="px-6 py-2.5 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center space-x-2">
-                  <XCircle className="w-4 h-4" />
-                  <span>Reject</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>

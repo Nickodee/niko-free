@@ -628,7 +628,9 @@ export default function EventDetailPage({ eventId, onNavigate }: EventDetailPage
 
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-8">
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">About This Event</h2>
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">{eventData.description}</p>
+                    <div className="max-w-full overflow-hidden">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 whitespace-pre-wrap break-words overflow-wrap-anywhere">{eventData.description}</p>
+                    </div>
                   </div>
 
                   {(eventData.interests && eventData.interests.length > 0) && (
