@@ -141,7 +141,11 @@ export default function TicketSelector({
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <h4 className="font-bold text-gray-900 dark:text-white">{ticket.name}</h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{ticket.available} tickets left</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {ticket.available !== null && ticket.available !== undefined 
+                      ? `${ticket.available} tickets left` 
+                      : 'Unlimited tickets'}
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-[#27aae2]">KES {getTotalPrice(ticket, getQuantity(ticket.id)).toLocaleString()}</p>
